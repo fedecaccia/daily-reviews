@@ -31,7 +31,7 @@ export const UpdateNotesButton: React.FC<UpdateNotesButtonProps> = ({
       changed 
     });
     setHasChanges(changed);
-  }, [notes, lastSavedNotes]);
+  }, [notes, lastSavedNotes, initialNotes]);
 
   const handleUpdate = async () => {
     setIsUpdating(true);

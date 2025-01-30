@@ -10,14 +10,11 @@ interface FieldProps {
 }
 
 export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }) => {
-  const [isUpdating, setIsUpdating] = useState(false);
-
   const handleChange = async (value: number | boolean | string) => {
     onChange(value);
     
     // Si no es el campo de notas, actualizar inmediatamente
     if (field.id !== 'notes') {
-      setIsUpdating(true);
       try {
         const response = await fetch('/api/update-field', {
           method: 'POST',
@@ -38,8 +35,6 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
       } catch (error) {
         console.error('Error updating field:', error);
         // Aquí podrías mostrar un mensaje de error al usuario
-      } finally {
-        setIsUpdating(false);
       }
     }
   };

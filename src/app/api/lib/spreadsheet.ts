@@ -1,6 +1,5 @@
-import { GoogleSpreadsheet, GoogleSpreadsheetRow } from 'google-spreadsheet';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { Section } from '@/types';
 
 let doc: GoogleSpreadsheet;
 
@@ -60,7 +59,7 @@ async function initializeSheet() {
   }
 }
 
-export async function updateField(date: string, sectionId: string, fieldId: string, value: any) {
+export async function updateField(date: string, sectionId: string, fieldId: string, value: string | number | boolean) {
   await initializeSheet();
   const sheet = doc.sheetsByIndex[0];
   
