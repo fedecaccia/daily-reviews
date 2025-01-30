@@ -247,12 +247,30 @@ export default function Home() {
         // Cargar datos de hoy
         const todayDate = new Date().toISOString().split('T')[0];
         const todayResponse = await fetch(`/api/load-data?date=${todayDate}`);
+        if (!todayResponse.ok) {
+          const errorData = await todayResponse.json();
+          console.error('Error loading today data:', {
+            status: todayResponse.status,
+            statusText: todayResponse.statusText,
+            error: errorData
+          });
+          throw new Error(`Failed to load today's data: ${errorData.details || errorData.error}`);
+        }
         const todayData = await todayResponse.json();
         
         // Cargar datos de ayer
         const yesterdayDate = new Date(new Date().setDate(new Date().getDate() - 1))
           .toISOString().split('T')[0];
         const yesterdayResponse = await fetch(`/api/load-data?date=${yesterdayDate}`);
+        if (!yesterdayResponse.ok) {
+          const errorData = await yesterdayResponse.json();
+          console.error('Error loading yesterday data:', {
+            status: yesterdayResponse.status,
+            statusText: yesterdayResponse.statusText,
+            error: errorData
+          });
+          throw new Error(`Failed to load yesterday's data: ${errorData.details || errorData.error}`);
+        }
         const yesterdayData = await yesterdayResponse.json();
 
         // Actualizar las secciones con los datos
@@ -285,6 +303,7 @@ export default function Home() {
         }
       } catch (error) {
         console.error('Error loading initial data:', error);
+        // Aquí podrías mostrar un mensaje de error al usuario
       }
     };
 

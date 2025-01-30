@@ -1,13 +1,5 @@
 module.exports = {
 
-"[externals]/next/dist/compiled/next-server/app-page.runtime.dev.js [external] (next/dist/compiled/next-server/app-page.runtime.dev.js, cjs)": (function(__turbopack_context__) {
-
-var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__, m: module, e: exports, t: __turbopack_require_real__ } = __turbopack_context__;
-{
-const mod = __turbopack_external_require__("next/dist/compiled/next-server/app-page.runtime.dev.js", () => require("next/dist/compiled/next-server/app-page.runtime.dev.js"));
-
-module.exports = mod;
-}}),
 "[project]/src/components/Field.tsx [app-ssr] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
@@ -766,28 +758,10 @@ function Home() {
                 // Cargar datos de hoy
                 const todayDate = new Date().toISOString().split('T')[0];
                 const todayResponse = await fetch(`/api/load-data?date=${todayDate}`);
-                if (!todayResponse.ok) {
-                    const errorData = await todayResponse.json();
-                    console.error('Error loading today data:', {
-                        status: todayResponse.status,
-                        statusText: todayResponse.statusText,
-                        error: errorData
-                    });
-                    throw new Error(`Failed to load today's data: ${errorData.details || errorData.error}`);
-                }
                 const todayData = await todayResponse.json();
                 // Cargar datos de ayer
                 const yesterdayDate = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
                 const yesterdayResponse = await fetch(`/api/load-data?date=${yesterdayDate}`);
-                if (!yesterdayResponse.ok) {
-                    const errorData = await yesterdayResponse.json();
-                    console.error('Error loading yesterday data:', {
-                        status: yesterdayResponse.status,
-                        statusText: yesterdayResponse.statusText,
-                        error: errorData
-                    });
-                    throw new Error(`Failed to load yesterday's data: ${errorData.details || errorData.error}`);
-                }
                 const yesterdayData = await yesterdayResponse.json();
                 // Actualizar las secciones con los datos
                 if (todayData) {
@@ -818,7 +792,6 @@ function Home() {
                 }
             } catch (error) {
                 console.error('Error loading initial data:', error);
-            // Aquí podrías mostrar un mensaje de error al usuario
             }
         };
         loadInitialData();
@@ -848,7 +821,7 @@ function Home() {
                         children: section.name
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 338,
+                        lineNumber: 319,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -863,12 +836,12 @@ function Home() {
                                         date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                                     }, field.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 342,
+                                        lineNumber: 323,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 340,
+                                lineNumber: 321,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -880,24 +853,24 @@ function Home() {
                                         date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                                     }, field.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 356,
+                                        lineNumber: 337,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 354,
+                                lineNumber: 335,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 339,
+                        lineNumber: 320,
                         columnNumber: 11
                     }, this)
                 ]
             }, section.id, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 337,
+                lineNumber: 318,
                 columnNumber: 9
             }, this);
         }
@@ -910,7 +883,7 @@ function Home() {
                         children: section.name
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 376,
+                        lineNumber: 357,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -923,7 +896,7 @@ function Home() {
                                 date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                             }, section.fields[0].id, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 378,
+                                lineNumber: 359,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UpdateNotesButton$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["UpdateNotesButton"], {
@@ -954,19 +927,19 @@ function Home() {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 388,
+                                lineNumber: 369,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 377,
+                        lineNumber: 358,
                         columnNumber: 11
                     }, this)
                 ]
             }, section.id, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 375,
+                lineNumber: 356,
                 columnNumber: 9
             }, this);
         }
@@ -978,7 +951,7 @@ function Home() {
                     children: section.name
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 428,
+                    lineNumber: 409,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -990,18 +963,18 @@ function Home() {
                             date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                         }, field.id, false, {
                             fileName: "[project]/src/app/page.tsx",
-                            lineNumber: 431,
+                            lineNumber: 412,
                             columnNumber: 13
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 429,
+                    lineNumber: 410,
                     columnNumber: 9
                 }, this)
             ]
         }, section.id, true, {
             fileName: "[project]/src/app/page.tsx",
-            lineNumber: 427,
+            lineNumber: 408,
             columnNumber: 7
         }, this);
     };
@@ -1036,33 +1009,33 @@ function Home() {
                                         children: tab.name
                                     }, tab.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 458,
+                                        lineNumber: 439,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 452,
+                                lineNumber: 433,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ThemeToggle$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ThemeToggle"], {}, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 471,
+                                lineNumber: 452,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 451,
+                        lineNumber: 432,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 450,
+                    lineNumber: 431,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 449,
+                lineNumber: 430,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -1079,19 +1052,19 @@ function Home() {
                         children: "Stats coming soon..."
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 488,
+                        lineNumber: 469,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 476,
+                lineNumber: 457,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/page.tsx",
-        lineNumber: 448,
+        lineNumber: 429,
         columnNumber: 5
     }, this);
 }
@@ -1101,40 +1074,7 @@ function Home() {
 var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, t: __turbopack_require_real__ } = __turbopack_context__;
 {
 }}),
-"[project]/node_modules/next/dist/server/route-modules/app-page/module.compiled.js [app-ssr] (ecmascript)": (function(__turbopack_context__) {
-
-var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__, m: module, e: exports, t: __turbopack_require_real__ } = __turbopack_context__;
-{
-"use strict";
-if ("TURBOPACK compile-time falsy", 0) {
-    "TURBOPACK unreachable";
-} else {
-    if ("TURBOPACK compile-time falsy", 0) {
-        "TURBOPACK unreachable";
-    } else {
-        if ("TURBOPACK compile-time truthy", 1) {
-            module.exports = __turbopack_require__("[externals]/next/dist/compiled/next-server/app-page.runtime.dev.js [external] (next/dist/compiled/next-server/app-page.runtime.dev.js, cjs)");
-        } else {
-            "TURBOPACK unreachable";
-        }
-    }
-} //# sourceMappingURL=module.compiled.js.map
-}}),
-"[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)": (function(__turbopack_context__) {
-
-var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__, m: module, e: exports, t: __turbopack_require_real__ } = __turbopack_context__;
-{
-"use strict";
-module.exports = __turbopack_require__("[project]/node_modules/next/dist/server/route-modules/app-page/module.compiled.js [app-ssr] (ecmascript)").vendored['react-ssr'].ReactJsxDevRuntime; //# sourceMappingURL=react-jsx-dev-runtime.js.map
-}}),
-"[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)": (function(__turbopack_context__) {
-
-var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__, m: module, e: exports, t: __turbopack_require_real__ } = __turbopack_context__;
-{
-"use strict";
-module.exports = __turbopack_require__("[project]/node_modules/next/dist/server/route-modules/app-page/module.compiled.js [app-ssr] (ecmascript)").vendored['react-ssr'].React; //# sourceMappingURL=react.js.map
-}}),
 
 };
 
-//# sourceMappingURL=%5Broot%20of%20the%20server%5D__6ac897._.js.map
+//# sourceMappingURL=src_65ee26._.js.map

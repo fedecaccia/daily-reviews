@@ -260,24 +260,30 @@ const HEADERS = [
 // Inicializar la conexión
 async function initializeSheet() {
     if (!doc) {
-        const SCOPES = [
-            'https://www.googleapis.com/auth/spreadsheets'
-        ];
-        const jwt = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$auth$2d$library$2f$build$2f$src$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["JWT"]({
-            email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-            key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-            scopes: SCOPES
-        });
-        doc = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$spreadsheet$2f$dist$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["GoogleSpreadsheet"](process.env.GOOGLE_SHEETS_SPREADSHEET_ID, jwt);
-        await doc.loadInfo();
-        // Obtener la primera hoja
-        const sheet = doc.sheetsByIndex[0];
         try {
-            // Intentar cargar los headers existentes
-            await sheet.loadHeaderRow();
+            const SCOPES = [
+                'https://www.googleapis.com/auth/spreadsheets'
+            ];
+            const jwt = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$auth$2d$library$2f$build$2f$src$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["JWT"]({
+                email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+                key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+                scopes: SCOPES
+            });
+            doc = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$spreadsheet$2f$dist$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["GoogleSpreadsheet"](process.env.GOOGLE_SHEETS_SPREADSHEET_ID, jwt);
+            await doc.loadInfo();
+            // Obtener la primera hoja
+            const sheet = doc.sheetsByIndex[0];
+            try {
+                // Intentar cargar los headers existentes
+                await sheet.loadHeaderRow();
+            } catch (error) {
+                console.error('Error loading headers:', error);
+                // Si no hay headers, los establecemos
+                await sheet.setHeaderRow(HEADERS);
+            }
         } catch (error) {
-            // Si no hay headers, los establecemos
-            await sheet.setHeaderRow(HEADERS);
+            console.error('Error initializing spreadsheet:', error);
+            throw new Error(`Failed to initialize spreadsheet: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 }
@@ -323,18 +329,27 @@ async function loadDayData(date) {
     const data = {};
     HEADERS.forEach((header)=>{
         const value = row.get(header);
-        // Convertir valores booleanos
-        if (value === 'TRUE' || value === 'true') {
-            data[header] = true;
-        } else if (value === 'FALSE' || value === 'false') {
-            data[header] = false;
-        } else if (!isNaN(Number(value)) && value !== '') {
-            data[header] = Number(value);
-        } else {
+        if (header === 'notes') {
+            // Para las notas, guardamos el valor directo sin procesar
             data[header] = value || '';
+            console.log('Notes loaded:', value); // Debug
+        } else if (header === 'date') {
+            // Para la fecha, guardamos el string directo
+            data[header] = value;
+        } else {
+            // Para el resto de campos
+            if (value === 'TRUE' || value === 'true') {
+                data[header] = true;
+            } else if (value === 'FALSE' || value === 'false') {
+                data[header] = false;
+            } else if (!isNaN(Number(value)) && value !== '') {
+                data[header] = Number(value);
+            } else {
+                data[header] = value || '';
+            }
         }
     });
-    console.log('Loaded data:', data); // Para debugging
+    console.log('Full loaded data:', data); // Para debugging
     return data;
 }
 }}),

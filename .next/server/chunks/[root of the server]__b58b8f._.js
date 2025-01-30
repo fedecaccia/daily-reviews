@@ -221,7 +221,7 @@ module.exports = mod;
 
 var { r: __turbopack_require__, f: __turbopack_module_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, M: __turbopack_modules__, l: __turbopack_load__, j: __turbopack_dynamic__, P: __turbopack_resolve_absolute_path__, U: __turbopack_relative_url__, R: __turbopack_resolve_module_id_path__, b: __turbopack_worker_blob_url__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__, z: __turbopack_require_stub__ } = __turbopack_context__;
 {
-/* eslint-disable @typescript-eslint/no-explicit-any */ /* eslint-disable @typescript-eslint/no-unused-vars */ __turbopack_esm__({
+__turbopack_esm__({
     "loadDayData": (()=>loadDayData),
     "updateField": (()=>updateField),
     "updateNotes": (()=>updateNotes)
@@ -260,24 +260,30 @@ const HEADERS = [
 // Inicializar la conexión
 async function initializeSheet() {
     if (!doc) {
-        const SCOPES = [
-            'https://www.googleapis.com/auth/spreadsheets'
-        ];
-        const jwt = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$auth$2d$library$2f$build$2f$src$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["JWT"]({
-            email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-            key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-            scopes: SCOPES
-        });
-        doc = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$spreadsheet$2f$dist$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["GoogleSpreadsheet"](process.env.GOOGLE_SHEETS_SPREADSHEET_ID, jwt);
-        await doc.loadInfo();
-        // Obtener la primera hoja
-        const sheet = doc.sheetsByIndex[0];
         try {
-            // Intentar cargar los headers existentes
-            await sheet.loadHeaderRow();
+            const SCOPES = [
+                'https://www.googleapis.com/auth/spreadsheets'
+            ];
+            const jwt = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$auth$2d$library$2f$build$2f$src$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["JWT"]({
+                email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+                key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+                scopes: SCOPES
+            });
+            doc = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$google$2d$spreadsheet$2f$dist$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["GoogleSpreadsheet"](process.env.GOOGLE_SHEETS_SPREADSHEET_ID, jwt);
+            await doc.loadInfo();
+            // Obtener la primera hoja
+            const sheet = doc.sheetsByIndex[0];
+            try {
+                // Intentar cargar los headers existentes
+                await sheet.loadHeaderRow();
+            } catch (error) {
+                console.error('Error loading headers:', error);
+                // Si no hay headers, los establecemos
+                await sheet.setHeaderRow(HEADERS);
+            }
         } catch (error) {
-            // Si no hay headers, los establecemos
-            await sheet.setHeaderRow(HEADERS);
+            console.error('Error initializing spreadsheet:', error);
+            throw new Error(`Failed to initialize spreadsheet: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 }
@@ -368,22 +374,58 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$serv
 ;
 ;
 async function GET(request) {
-    const { searchParams } = new URL(request.url);
-    const date = searchParams.get('date');
-    if (!date) {
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: 'Date is required'
-        }, {
-            status: 400
-        });
-    }
     try {
+        const { searchParams } = new URL(request.url);
+        const date = searchParams.get('date');
+        if (!date) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: 'Date parameter is required'
+            }, {
+                status: 400
+            });
+        }
+        // Verificar que las variables de entorno estén definidas
+        const requiredEnvVars = [
+            'GOOGLE_SHEETS_PRIVATE_KEY',
+            'GOOGLE_SHEETS_CLIENT_EMAIL',
+            'GOOGLE_SHEETS_SPREADSHEET_ID'
+        ];
+        const missingEnvVars = requiredEnvVars.filter((varName)=>!process.env[varName]);
+        if (missingEnvVars.length > 0) {
+            console.error('Missing environment variables:', missingEnvVars);
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: 'Configuration error',
+                details: `Missing environment variables: ${missingEnvVars.join(', ')}`
+            }, {
+                status: 500
+            });
+        }
+        // Log de las variables de entorno (sin mostrar valores completos por seguridad)
+        console.log('Environment variables status:', {
+            PRIVATE_KEY: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.slice(0, 20) + '...',
+            CLIENT_EMAIL: process.env.GOOGLE_SHEETS_CLIENT_EMAIL?.slice(0, 10) + '...',
+            SPREADSHEET_ID: process.env.GOOGLE_SHEETS_SPREADSHEET_ID?.slice(0, 10) + '...'
+        });
         const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$api$2f$lib$2f$spreadsheet$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["loadDayData"])(date);
+        if (!data) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: 'No data found',
+                details: `No data found for date: ${date}`
+            }, {
+                status: 404
+            });
+        }
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
     } catch (error) {
-        console.error('Error loading data:', error);
+        console.error('Load data error:', error);
+        // Mejorar el mensaje de error
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorStack = error instanceof Error ? error.stack : undefined;
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: 'Failed to load data'
+            error: 'Failed to load data',
+            details: errorMessage,
+            stack: ("TURBOPACK compile-time truthy", 1) ? errorStack : ("TURBOPACK unreachable", undefined),
+            timestamp: new Date().toISOString()
         }, {
             status: 500
         });
