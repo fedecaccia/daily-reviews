@@ -144,7 +144,7 @@ const Field = ({ field, onChange, sectionId, date })=>{
                         onClick: ()=>handleChange(!field.value),
                         className: `toggle-switch ${field.value ? isDangerousField ? 'active-danger' : 'active' : ''}`,
                         role: "switch",
-                        "aria-checked": field.value,
+                        "aria-checked": Boolean(field.value),
                         tabIndex: 0
                     }, void 0, false, {
                         fileName: "[project]/src/components/Field.tsx",
