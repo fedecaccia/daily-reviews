@@ -97,7 +97,11 @@ export async function updateNotes(date: string, notes: string) {
   }
 }
 
-export async function loadDayData(date: string) {
+interface DayData {
+  [key: string]: string | number | boolean;
+}
+
+export async function loadDayData(date: string): Promise<DayData | null> {
   await initializeSheet();
   const sheet = doc.sheetsByIndex[0];
   

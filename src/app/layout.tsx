@@ -1,5 +1,5 @@
 import './globals.css'
-import { Inter, Quicksand } from 'next/font/google'
+import { Quicksand } from 'next/font/google'
 
 const quicksand = Quicksand({ 
   subsets: ['latin'],

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Field as FieldComponent } from '@/components/Field';
-import { Field, DailyData, Section } from '@/types';
+import { Section } from '@/types';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UpdateNotesButton } from '@/components/UpdateNotesButton';
 
@@ -246,12 +246,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'today' | 'yesterday' | 'stats'>('today');
   const [todaySections, setTodaySections] = useState<Section[]>(initialSections);
   const [yesterdaySections, setYesterdaySections] = useState<Section[]>(initialSections);
-  const [lastSavedDate, setLastSavedDate] = useState<string>('');
-
-  // Función para obtener la fecha actual en formato YYYY-MM-DD
-  const getCurrentDate = () => {
-    return new Date().toISOString().split('T')[0];
-  };
 
   // Cargar datos desde Google Sheets
   useEffect(() => {
@@ -303,19 +297,6 @@ export default function Home() {
 
     loadInitialData();
   }, []);
-
-  // Guardar cambios en localStorage cuando se modifican los campos
-  useEffect(() => {
-    if (lastSavedDate) {
-      localStorage.setItem(STORAGE_KEYS.TODAY, JSON.stringify(todaySections));
-    }
-  }, [todaySections, lastSavedDate]);
-
-  useEffect(() => {
-    if (lastSavedDate) {
-      localStorage.setItem(STORAGE_KEYS.YESTERDAY, JSON.stringify(yesterdaySections));
-    }
-  }, [yesterdaySections, lastSavedDate]);
 
   const handleFieldChange = (sectionId: string, fieldId: string, value: number | boolean | string, isYesterday: boolean = false) => {
     const setSections = isYesterday ? setYesterdaySections : setTodaySections;

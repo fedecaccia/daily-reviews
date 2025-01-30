@@ -1,6 +1,5 @@
 import React from 'react';
 import { Field as FieldType } from '@/types';
-import { useState } from 'react';
 
 interface FieldProps {
   field: FieldType;
