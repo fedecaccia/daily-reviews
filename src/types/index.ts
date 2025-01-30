@@ -1,12 +1,10 @@
-export type FieldType = 'minutes' | 'boolean' | 'text' | 'slider';
-
 export interface Field {
   id: string;
   name: string;
-  type: FieldType;
+  type: 'boolean' | 'minutes' | 'text' | 'slider';
   required: boolean;
-  defaultValue: number | boolean | string;
-  value: number | boolean | string;
+  defaultValue: boolean | number | string;
+  value: boolean | number | string;
 }
 
 export interface Section {

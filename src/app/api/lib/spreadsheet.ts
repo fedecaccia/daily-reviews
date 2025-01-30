@@ -111,7 +111,7 @@ export async function loadDayData(date: string): Promise<DayData | null> {
   if (!row) return null;
 
   // Convertir la fila a un objeto con todos los campos
-  const data: Record<string, any> = {};
+  const data: DayData = {};
   HEADERS.forEach(header => {
     const value = row.get(header);
     

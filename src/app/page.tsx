@@ -235,13 +235,6 @@ const initialSections: Section[] = [
   }
 ];
 
-// Constantes para las keys de localStorage
-const STORAGE_KEYS = {
-  TODAY: 'goals_tracker_today',
-  YESTERDAY: 'goals_tracker_yesterday',
-  LAST_SAVED_DATE: 'goals_tracker_last_date'
-};
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'today' | 'yesterday' | 'stats'>('today');
   const [todaySections, setTodaySections] = useState<Section[]>(initialSections);
