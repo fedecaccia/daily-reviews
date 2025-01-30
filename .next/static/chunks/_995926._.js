@@ -9,18 +9,12 @@ __turbopack_esm__({
     "Field": (()=>Field)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
-;
-var _s = __turbopack_refresh__.signature();
 ;
 const Field = ({ field, onChange, sectionId, date })=>{
-    _s();
-    const [isUpdating, setIsUpdating] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const handleChange = async (value)=>{
         onChange(value);
         // Si no es el campo de notas, actualizar inmediatamente
         if (field.id !== 'notes') {
-            setIsUpdating(true);
             try {
                 const response = await fetch('/api/update-field', {
                     method: 'POST',
@@ -40,8 +34,6 @@ const Field = ({ field, onChange, sectionId, date })=>{
             } catch (error) {
                 console.error('Error updating field:', error);
             // Aquí podrías mostrar un mensaje de error al usuario
-            } finally{
-                setIsUpdating(false);
             }
         }
     };
@@ -70,7 +62,7 @@ const Field = ({ field, onChange, sectionId, date })=>{
                                 children: "-"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 63,
+                                lineNumber: 57,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -81,7 +73,7 @@ const Field = ({ field, onChange, sectionId, date })=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 77,
+                                lineNumber: 71,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -94,13 +86,13 @@ const Field = ({ field, onChange, sectionId, date })=>{
                                 children: "+"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 78,
+                                lineNumber: 72,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 62,
+                        lineNumber: 56,
                         columnNumber: 13
                     }, this);
                 }
@@ -114,7 +106,7 @@ const Field = ({ field, onChange, sectionId, date })=>{
                             children: "-"
                         }, void 0, false, {
                             fileName: "[project]/src/components/Field.tsx",
-                            lineNumber: 97,
+                            lineNumber: 91,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -125,7 +117,7 @@ const Field = ({ field, onChange, sectionId, date })=>{
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/Field.tsx",
-                            lineNumber: 108,
+                            lineNumber: 102,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -135,13 +127,13 @@ const Field = ({ field, onChange, sectionId, date })=>{
                             children: "+"
                         }, void 0, false, {
                             fileName: "[project]/src/components/Field.tsx",
-                            lineNumber: 109,
+                            lineNumber: 103,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 96,
+                    lineNumber: 90,
                     columnNumber: 11
                 }, this);
             case 'boolean':
@@ -156,12 +148,12 @@ const Field = ({ field, onChange, sectionId, date })=>{
                         tabIndex: 0
                     }, void 0, false, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 128,
+                        lineNumber: 122,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 127,
+                    lineNumber: 121,
                     columnNumber: 11
                 }, this);
             case 'text':
@@ -172,7 +164,7 @@ const Field = ({ field, onChange, sectionId, date })=>{
                     rows: 4
                 }, void 0, false, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 140,
+                    lineNumber: 134,
                     columnNumber: 11
                 }, this);
             case 'slider':
@@ -222,7 +214,7 @@ const Field = ({ field, onChange, sectionId, date })=>{
                                 className: "slider-track"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 193,
+                                lineNumber: 187,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -234,18 +226,18 @@ const Field = ({ field, onChange, sectionId, date })=>{
                                 className: "slider-input"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 194,
+                                lineNumber: 188,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 187,
+                        lineNumber: 181,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 186,
+                    lineNumber: 180,
                     columnNumber: 11
                 }, this);
         }
@@ -262,24 +254,23 @@ const Field = ({ field, onChange, sectionId, date })=>{
                         children: "*"
                     }, void 0, false, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 216,
+                        lineNumber: 210,
                         columnNumber: 28
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/Field.tsx",
-                lineNumber: 214,
+                lineNumber: 208,
                 columnNumber: 7
             }, this),
             renderField()
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/Field.tsx",
-        lineNumber: 209,
+        lineNumber: 203,
         columnNumber: 5
     }, this);
 };
-_s(Field, "Iu9QP35HOe9AU5k2QizHmZa0ji4=");
 _c = Field;
 var _c;
 __turbopack_refresh__.register(_c, "Field");
@@ -425,7 +416,8 @@ const UpdateNotesButton = ({ notes, initialNotes, date, onUpdate })=>{
         }
     }["UpdateNotesButton.useEffect"], [
         notes,
-        lastSavedNotes
+        lastSavedNotes,
+        initialNotes
     ]);
     const handleUpdate = async ()=>{
         setIsUpdating(true);
@@ -784,22 +776,11 @@ const initialSections = [
         ]
     }
 ];
-// Constantes para las keys de localStorage
-const STORAGE_KEYS = {
-    TODAY: 'goals_tracker_today',
-    YESTERDAY: 'goals_tracker_yesterday',
-    LAST_SAVED_DATE: 'goals_tracker_last_date'
-};
 function Home() {
     _s();
     const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('today');
     const [todaySections, setTodaySections] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(initialSections);
     const [yesterdaySections, setYesterdaySections] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(initialSections);
-    const [lastSavedDate, setLastSavedDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
-    // Función para obtener la fecha actual en formato YYYY-MM-DD
-    const getCurrentDate = ()=>{
-        return new Date().toISOString().split('T')[0];
-    };
     // Cargar datos desde Google Sheets
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "Home.useEffect": ()=>{
@@ -857,27 +838,6 @@ function Home() {
             loadInitialData();
         }
     }["Home.useEffect"], []);
-    // Guardar cambios en localStorage cuando se modifican los campos
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Home.useEffect": ()=>{
-            if (lastSavedDate) {
-                localStorage.setItem(STORAGE_KEYS.TODAY, JSON.stringify(todaySections));
-            }
-        }
-    }["Home.useEffect"], [
-        todaySections,
-        lastSavedDate
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Home.useEffect": ()=>{
-            if (lastSavedDate) {
-                localStorage.setItem(STORAGE_KEYS.YESTERDAY, JSON.stringify(yesterdaySections));
-            }
-        }
-    }["Home.useEffect"], [
-        yesterdaySections,
-        lastSavedDate
-    ]);
     const handleFieldChange = (sectionId, fieldId, value, isYesterday = false)=>{
         const setSections = isYesterday ? setYesterdaySections : setTodaySections;
         const sections = isYesterday ? yesterdaySections : todaySections;
@@ -903,7 +863,7 @@ function Home() {
                         children: section.name
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 345,
+                        lineNumber: 319,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -918,12 +878,12 @@ function Home() {
                                         date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                                     }, field.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 349,
+                                        lineNumber: 323,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 347,
+                                lineNumber: 321,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -935,24 +895,24 @@ function Home() {
                                         date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                                     }, field.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 363,
+                                        lineNumber: 337,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 361,
+                                lineNumber: 335,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 346,
+                        lineNumber: 320,
                         columnNumber: 11
                     }, this)
                 ]
             }, section.id, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 344,
+                lineNumber: 318,
                 columnNumber: 9
             }, this);
         }
@@ -965,7 +925,7 @@ function Home() {
                         children: section.name
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 383,
+                        lineNumber: 357,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -978,7 +938,7 @@ function Home() {
                                 date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                             }, section.fields[0].id, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 385,
+                                lineNumber: 359,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UpdateNotesButton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["UpdateNotesButton"], {
@@ -1009,19 +969,19 @@ function Home() {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 395,
+                                lineNumber: 369,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 384,
+                        lineNumber: 358,
                         columnNumber: 11
                     }, this)
                 ]
             }, section.id, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 382,
+                lineNumber: 356,
                 columnNumber: 9
             }, this);
         }
@@ -1033,7 +993,7 @@ function Home() {
                     children: section.name
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 435,
+                    lineNumber: 409,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1045,18 +1005,18 @@ function Home() {
                             date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                         }, field.id, false, {
                             fileName: "[project]/src/app/page.tsx",
-                            lineNumber: 438,
+                            lineNumber: 412,
                             columnNumber: 13
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 436,
+                    lineNumber: 410,
                     columnNumber: 9
                 }, this)
             ]
         }, section.id, true, {
             fileName: "[project]/src/app/page.tsx",
-            lineNumber: 434,
+            lineNumber: 408,
             columnNumber: 7
         }, this);
     };
@@ -1091,33 +1051,33 @@ function Home() {
                                         children: tab.name
                                     }, tab.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 465,
+                                        lineNumber: 439,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 459,
+                                lineNumber: 433,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ThemeToggle$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ThemeToggle"], {}, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 478,
+                                lineNumber: 452,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 458,
+                        lineNumber: 432,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 457,
+                    lineNumber: 431,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 456,
+                lineNumber: 430,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -1134,23 +1094,23 @@ function Home() {
                         children: "Stats coming soon..."
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 495,
+                        lineNumber: 469,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 483,
+                lineNumber: 457,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/page.tsx",
-        lineNumber: 455,
+        lineNumber: 429,
         columnNumber: 5
     }, this);
 }
-_s(Home, "pDrvX/F1lFzabu1A4FVv0iCvIzk=");
+_s(Home, "Gyn3lXE6JaJzFqGqHOzS5Fc0HiA=");
 _c = Home;
 var _c;
 __turbopack_refresh__.register(_c, "Home");
