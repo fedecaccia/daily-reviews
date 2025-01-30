@@ -33,28 +33,34 @@ const HEADERS = [
 // Inicializar la conexión
 async function initializeSheet() {
   if (!doc) {
-    const SCOPES = [
-      'https://www.googleapis.com/auth/spreadsheets',
-    ];
-
-    const jwt = new JWT({
-      email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-      key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      scopes: SCOPES,
-    });
-
-    doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!, jwt);
-    await doc.loadInfo();
-
-    // Obtener la primera hoja
-    const sheet = doc.sheetsByIndex[0];
-    
     try {
-      // Intentar cargar los headers existentes
-      await sheet.loadHeaderRow();
+      const SCOPES = [
+        'https://www.googleapis.com/auth/spreadsheets',
+      ];
+
+      const jwt = new JWT({
+        email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+        key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        scopes: SCOPES,
+      });
+
+      doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!, jwt);
+      await doc.loadInfo();
+
+      // Obtener la primera hoja
+      const sheet = doc.sheetsByIndex[0];
+      
+      try {
+        // Intentar cargar los headers existentes
+        await sheet.loadHeaderRow();
+      } catch (error) {
+        console.error('Error loading headers:', error);
+        // Si no hay headers, los establecemos
+        await sheet.setHeaderRow(HEADERS);
+      }
     } catch (error) {
-      // Si no hay headers, los establecemos
-      await sheet.setHeaderRow(HEADERS);
+      console.error('Error initializing spreadsheet:', error);
+      throw new Error(`Failed to initialize spreadsheet: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }
