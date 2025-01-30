@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST="{\n  \"app\": {\n    \"[project]/src/app/page\": [\n      \"static/media/6xKtdSZaM9iE8KbpRA_hK1QNYuDyPw-s.p.d7f823df.woff2\"\n    ]\n  },\n  \"appUsingSizeAdjust\": true,\n  \"pages\": {},\n  \"pagesUsingSizeAdjust\": false\n}"
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/federicocaccia/code/daily-review/src/app/layout\":[\"static/media/34a9823ac715e2c2-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

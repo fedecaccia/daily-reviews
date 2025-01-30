@@ -1,5 +1,7 @@
 import './globals.css'
 import { Quicksand } from 'next/font/google'
+import { Providers } from './providers'
+import { AuthCheck } from '@/components/AuthCheck'
 
 const quicksand = Quicksand({ 
   subsets: ['latin'],
@@ -22,7 +24,11 @@ export default function RootLayout({
         <title>Daily Review</title>
       </head>
       <body className={`${quicksand.variable} font-sans relative`}>
-        {children}
+        <Providers>
+          <AuthCheck>
+            {children}
+          </AuthCheck>
+        </Providers>
       </body>
     </html>
   )
