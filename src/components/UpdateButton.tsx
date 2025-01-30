@@ -1,25 +1,59 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface UpdateButtonProps {
   onUpdate: () => Promise<void>;
   isYesterday?: boolean;
+  sections: any[];
+  date: string;
+  initialNotes: string;
 }
 
-export const UpdateButton: React.FC<UpdateButtonProps> = ({ onUpdate, isYesterday = false }) => {
+export const UpdateButton: React.FC<UpdateButtonProps> = ({ 
+  onUpdate, 
+  isYesterday, 
+  sections, 
+  date,
+  initialNotes 
+}) => {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Detectar cambios en las notas
+  useEffect(() => {
+    const notesSection = sections.find(s => s.id === 'notes');
+    const currentNotes = notesSection?.fields[0].value || '';
+    const initialNotesValue = initialNotes || '';
+    
+    const hasChanged = currentNotes !== initialNotesValue;
+    setHasChanges(hasChanged);
+  }, [sections, initialNotes]);
 
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      await onUpdate();
-      // Mostrar feedback de éxito
-      alert(`${isYesterday ? 'Yesterday' : 'Today'} updated successfully!`);
+      const notesSection = sections.find(s => s.id === 'notes');
+      const notes = notesSection?.fields[0].value || '';
+
+      const response = await fetch('/api/update-notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          date,
+          notes
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update notes');
+      }
+
+      setHasChanges(false);
     } catch (error) {
-      // Mostrar feedback de error
       console.error('Update failed:', error);
-      alert('Failed to update. Please try again.');
     } finally {
       setIsUpdating(false);
     }
@@ -28,13 +62,15 @@ export const UpdateButton: React.FC<UpdateButtonProps> = ({ onUpdate, isYesterda
   return (
     <button
       onClick={handleUpdate}
-      disabled={isUpdating}
+      disabled={isUpdating || !hasChanges}
       className={`
         w-full
         px-6 py-2 
         rounded-full 
-        bg-[var(--button-success)] 
-        text-white 
+        ${!hasChanges 
+          ? 'bg-[var(--color-disabled)] text-[var(--text-secondary)]' 
+          : 'bg-[var(--button-success)] text-white'
+        }
         font-medium 
         shadow-lg 
         hover:opacity-90 
@@ -49,6 +85,11 @@ export const UpdateButton: React.FC<UpdateButtonProps> = ({ onUpdate, isYesterda
         <>
           <span className="animate-spin">⟳</span>
           <span>Updating...</span>
+        </>
+      ) : !hasChanges ? (
+        <>
+          <span>✓</span>
+          <span>Updated!</span>
         </>
       ) : (
         <>

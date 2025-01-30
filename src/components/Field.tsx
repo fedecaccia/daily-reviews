@@ -1,19 +1,56 @@
 import React from 'react';
 import { Field as FieldType } from '@/types';
+import { useState } from 'react';
 
 interface FieldProps {
   field: FieldType;
   onChange: (value: number | boolean | string) => void;
+  sectionId: string;
+  date: string;
 }
 
-export const Field: React.FC<FieldProps> = ({ field, onChange }) => {
+export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }) => {
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleChange = async (value: number | boolean | string) => {
+    onChange(value);
+    
+    // Si no es el campo de notas, actualizar inmediatamente
+    if (field.id !== 'notes') {
+      setIsUpdating(true);
+      try {
+        const response = await fetch('/api/update-field', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date,
+            sectionId,
+            fieldId: field.id,
+            value
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update field');
+        }
+      } catch (error) {
+        console.error('Error updating field:', error);
+        // Aquí podrías mostrar un mensaje de error al usuario
+      } finally {
+        setIsUpdating(false);
+      }
+    }
+  };
+
   const handleMinutesChange = (increment: number) => {
     const currentValue = Number(field.value);
     const newValue = currentValue + increment;
     
     // No permitir valores negativos y máximo 240 minutos (4 horas)
     if (newValue >= 0 && newValue <= 240) {
-      onChange(newValue);
+      handleChange(newValue);
     }
   };
 
@@ -26,7 +63,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange }) => {
               <button
                 onClick={() => {
                   const newValue = Number(field.value) - 1;
-                  if (newValue >= 0) onChange(newValue);
+                  if (newValue >= 0) handleChange(newValue);
                 }}
                 className={`px-3 py-1 rounded ${
                   Number(field.value) <= 0 
@@ -41,7 +78,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange }) => {
               <button
                 onClick={() => {
                   const newValue = Number(field.value) + 1;
-                  if (newValue <= 100) onChange(newValue);
+                  if (newValue <= 100) handleChange(newValue);
                 }}
                 className={`px-3 py-1 rounded ${
                   Number(field.value) >= 100 
@@ -89,7 +126,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange }) => {
         return (
           <div className="flex items-center">
             <div
-              onClick={() => onChange(!field.value)}
+              onClick={() => handleChange(!field.value)}
               className={`toggle-switch ${field.value ? (isDangerousField ? 'active-danger' : 'active') : ''}`}
               role="switch"
               aria-checked={field.value}
@@ -102,7 +139,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange }) => {
         return (
           <textarea
             value={field.value as string}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => handleChange(e.target.value)}
             className="w-full p-2 border rounded mt-2 transition-colors duration-200"
             rows={4}
           />
@@ -159,7 +196,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange }) => {
                 min="1"
                 max="5"
                 value={field.value as number}
-                onChange={(e) => onChange(Number(e.target.value))}
+                onChange={(e) => handleChange(Number(e.target.value))}
                 className="slider-input"
               />
             </div>

@@ -9,14 +9,48 @@ __turbopack_esm__({
     "Field": (()=>Field)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
 ;
-const Field = ({ field, onChange })=>{
+var _s = __turbopack_refresh__.signature();
+;
+const Field = ({ field, onChange, sectionId, date })=>{
+    _s();
+    const [isUpdating, setIsUpdating] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const handleChange = async (value)=>{
+        onChange(value);
+        // Si no es el campo de notas, actualizar inmediatamente
+        if (field.id !== 'notes') {
+            setIsUpdating(true);
+            try {
+                const response = await fetch('/api/update-field', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date,
+                        sectionId,
+                        fieldId: field.id,
+                        value
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to update field');
+                }
+            } catch (error) {
+                console.error('Error updating field:', error);
+            // Aquí podrías mostrar un mensaje de error al usuario
+            } finally{
+                setIsUpdating(false);
+            }
+        }
+    };
     const handleMinutesChange = (increment)=>{
         const currentValue = Number(field.value);
         const newValue = currentValue + increment;
         // No permitir valores negativos y máximo 240 minutos (4 horas)
         if (newValue >= 0 && newValue <= 240) {
-            onChange(newValue);
+            handleChange(newValue);
         }
     };
     const renderField = ()=>{
@@ -29,14 +63,14 @@ const Field = ({ field, onChange })=>{
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 onClick: ()=>{
                                     const newValue = Number(field.value) - 1;
-                                    if (newValue >= 0) onChange(newValue);
+                                    if (newValue >= 0) handleChange(newValue);
                                 },
                                 className: `px-3 py-1 rounded ${Number(field.value) <= 0 ? 'bg-[var(--color-disabled)] cursor-not-allowed' : 'bg-[var(--button-error)] text-white'}`,
                                 disabled: Number(field.value) <= 0,
                                 children: "-"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 26,
+                                lineNumber: 63,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -47,26 +81,26 @@ const Field = ({ field, onChange })=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 40,
+                                lineNumber: 77,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 onClick: ()=>{
                                     const newValue = Number(field.value) + 1;
-                                    if (newValue <= 100) onChange(newValue);
+                                    if (newValue <= 100) handleChange(newValue);
                                 },
                                 className: `px-3 py-1 rounded ${Number(field.value) >= 100 ? 'bg-[var(--color-disabled)] cursor-not-allowed' : 'bg-[var(--button-success)] text-white'}`,
                                 disabled: Number(field.value) >= 100,
                                 children: "+"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 41,
+                                lineNumber: 78,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 25,
+                        lineNumber: 62,
                         columnNumber: 13
                     }, this);
                 }
@@ -80,7 +114,7 @@ const Field = ({ field, onChange })=>{
                             children: "-"
                         }, void 0, false, {
                             fileName: "[project]/src/components/Field.tsx",
-                            lineNumber: 60,
+                            lineNumber: 97,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -91,7 +125,7 @@ const Field = ({ field, onChange })=>{
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/Field.tsx",
-                            lineNumber: 71,
+                            lineNumber: 108,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -101,13 +135,13 @@ const Field = ({ field, onChange })=>{
                             children: "+"
                         }, void 0, false, {
                             fileName: "[project]/src/components/Field.tsx",
-                            lineNumber: 72,
+                            lineNumber: 109,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 59,
+                    lineNumber: 96,
                     columnNumber: 11
                 }, this);
             case 'boolean':
@@ -115,30 +149,30 @@ const Field = ({ field, onChange })=>{
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex items-center",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        onClick: ()=>onChange(!field.value),
+                        onClick: ()=>handleChange(!field.value),
                         className: `toggle-switch ${field.value ? isDangerousField ? 'active-danger' : 'active' : ''}`,
                         role: "switch",
                         "aria-checked": field.value,
                         tabIndex: 0
                     }, void 0, false, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 91,
+                        lineNumber: 128,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 90,
+                    lineNumber: 127,
                     columnNumber: 11
                 }, this);
             case 'text':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
                     value: field.value,
-                    onChange: (e)=>onChange(e.target.value),
+                    onChange: (e)=>handleChange(e.target.value),
                     className: "w-full p-2 border rounded mt-2 transition-colors duration-200",
                     rows: 4
                 }, void 0, false, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 103,
+                    lineNumber: 140,
                     columnNumber: 11
                 }, this);
             case 'slider':
@@ -188,7 +222,7 @@ const Field = ({ field, onChange })=>{
                                 className: "slider-track"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 156,
+                                lineNumber: 193,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -196,22 +230,22 @@ const Field = ({ field, onChange })=>{
                                 min: "1",
                                 max: "5",
                                 value: field.value,
-                                onChange: (e)=>onChange(Number(e.target.value)),
+                                onChange: (e)=>handleChange(Number(e.target.value)),
                                 className: "slider-input"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Field.tsx",
-                                lineNumber: 157,
+                                lineNumber: 194,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 150,
+                        lineNumber: 187,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/Field.tsx",
-                    lineNumber: 149,
+                    lineNumber: 186,
                     columnNumber: 11
                 }, this);
         }
@@ -228,23 +262,24 @@ const Field = ({ field, onChange })=>{
                         children: "*"
                     }, void 0, false, {
                         fileName: "[project]/src/components/Field.tsx",
-                        lineNumber: 179,
+                        lineNumber: 216,
                         columnNumber: 28
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/Field.tsx",
-                lineNumber: 177,
+                lineNumber: 214,
                 columnNumber: 7
             }, this),
             renderField()
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/Field.tsx",
-        lineNumber: 172,
+        lineNumber: 209,
         columnNumber: 5
     }, this);
 };
+_s(Field, "Iu9QP35HOe9AU5k2QizHmZa0ji4=");
 _c = Field;
 var _c;
 __turbopack_refresh__.register(_c, "Field");
@@ -266,32 +301,58 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var _s = __turbopack_refresh__.signature();
 'use client';
 ;
-const UpdateButton = ({ onUpdate, isYesterday = false })=>{
+const UpdateButton = ({ onUpdate, isYesterday, sections, date, initialNotes })=>{
     _s();
     const [isUpdating, setIsUpdating] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [hasChanges, setHasChanges] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // Detectar cambios en las notas
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "UpdateButton.useEffect": ()=>{
+            const notesSection = sections.find({
+                "UpdateButton.useEffect.notesSection": (s)=>s.id === 'notes'
+            }["UpdateButton.useEffect.notesSection"]);
+            const currentNotes = notesSection?.fields[0].value || '';
+            const initialNotesValue = initialNotes || '';
+            const hasChanged = currentNotes !== initialNotesValue;
+            setHasChanges(hasChanged);
+        }
+    }["UpdateButton.useEffect"], [
+        sections,
+        initialNotes
+    ]);
     const handleUpdate = async ()=>{
         setIsUpdating(true);
         try {
-            await onUpdate();
-            // Mostrar feedback de éxito
-            alert(`${isYesterday ? 'Yesterday' : 'Today'} updated successfully!`);
+            const notesSection = sections.find((s)=>s.id === 'notes');
+            const notes = notesSection?.fields[0].value || '';
+            const response = await fetch('/api/update-notes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    date,
+                    notes
+                })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update notes');
+            }
+            setHasChanges(false);
         } catch (error) {
-            // Mostrar feedback de error
             console.error('Update failed:', error);
-            alert('Failed to update. Please try again.');
         } finally{
             setIsUpdating(false);
         }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
         onClick: handleUpdate,
-        disabled: isUpdating,
+        disabled: isUpdating || !hasChanges,
         className: `
         w-full
         px-6 py-2 
         rounded-full 
-        bg-[var(--button-success)] 
-        text-white 
+        ${!hasChanges ? 'bg-[var(--color-disabled)] text-[var(--text-secondary)]' : 'bg-[var(--button-success)] text-white'}
         font-medium 
         shadow-lg 
         hover:opacity-90 
@@ -308,14 +369,31 @@ const UpdateButton = ({ onUpdate, isYesterday = false })=>{
                     children: "⟳"
                 }, void 0, false, {
                     fileName: "[project]/src/components/UpdateButton.tsx",
-                    lineNumber: 50,
+                    lineNumber: 86,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     children: "Updating..."
                 }, void 0, false, {
                     fileName: "[project]/src/components/UpdateButton.tsx",
-                    lineNumber: 51,
+                    lineNumber: 87,
+                    columnNumber: 11
+                }, this)
+            ]
+        }, void 0, true) : !hasChanges ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+            children: [
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                    children: "✓"
+                }, void 0, false, {
+                    fileName: "[project]/src/components/UpdateButton.tsx",
+                    lineNumber: 91,
+                    columnNumber: 11
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                    children: "Updated!"
+                }, void 0, false, {
+                    fileName: "[project]/src/components/UpdateButton.tsx",
+                    lineNumber: 92,
                     columnNumber: 11
                 }, this)
             ]
@@ -325,7 +403,7 @@ const UpdateButton = ({ onUpdate, isYesterday = false })=>{
                     children: "↑"
                 }, void 0, false, {
                     fileName: "[project]/src/components/UpdateButton.tsx",
-                    lineNumber: 55,
+                    lineNumber: 96,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -335,18 +413,18 @@ const UpdateButton = ({ onUpdate, isYesterday = false })=>{
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/UpdateButton.tsx",
-                    lineNumber: 56,
+                    lineNumber: 97,
                     columnNumber: 11
                 }, this)
             ]
         }, void 0, true)
     }, void 0, false, {
         fileName: "[project]/src/components/UpdateButton.tsx",
-        lineNumber: 29,
+        lineNumber: 63,
         columnNumber: 5
     }, this);
 };
-_s(UpdateButton, "Iu9QP35HOe9AU5k2QizHmZa0ji4=");
+_s(UpdateButton, "7vw0ctPtLX1icNO1SeziaHarOe4=");
 _c = UpdateButton;
 var _c;
 __turbopack_refresh__.register(_c, "UpdateButton");
@@ -721,40 +799,61 @@ function Home() {
     const getCurrentDate = ()=>{
         return new Date().toISOString().split('T')[0];
     };
-    // Cargar datos guardados al iniciar
+    // Cargar datos desde Google Sheets
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "Home.useEffect": ()=>{
-            // Intentamos recuperar los datos del localStorage
-            const savedLastDate = localStorage.getItem(STORAGE_KEYS.LAST_SAVED_DATE) || '';
-            const currentDate = getCurrentDate();
-            let savedTodaySections;
-            let savedYesterdaySections;
-            try {
-                const todayData = localStorage.getItem(STORAGE_KEYS.TODAY);
-                const yesterdayData = localStorage.getItem(STORAGE_KEYS.YESTERDAY);
-                savedTodaySections = todayData ? JSON.parse(todayData) : initialSections;
-                savedYesterdaySections = yesterdayData ? JSON.parse(yesterdayData) : initialSections;
-            } catch (e) {
-                console.error('Error loading data from localStorage:', e);
-                savedTodaySections = initialSections;
-                savedYesterdaySections = initialSections;
-            }
-            // Si es un nuevo día
-            if (savedLastDate && savedLastDate !== currentDate) {
-                // Mover los datos de hoy a ayer
-                localStorage.setItem(STORAGE_KEYS.YESTERDAY, JSON.stringify(savedTodaySections));
-                // Resetear los datos de hoy
-                localStorage.setItem(STORAGE_KEYS.TODAY, JSON.stringify(initialSections));
-                setYesterdaySections(savedTodaySections);
-                setTodaySections(initialSections);
-            } else {
-                // Si es el mismo día o primer uso, cargar los datos guardados o usar iniciales
-                setTodaySections(savedTodaySections);
-                setYesterdaySections(savedYesterdaySections);
-            }
-            // Actualizar la fecha
-            localStorage.setItem(STORAGE_KEYS.LAST_SAVED_DATE, currentDate);
-            setLastSavedDate(currentDate);
+            const loadInitialData = {
+                "Home.useEffect.loadInitialData": async ()=>{
+                    try {
+                        // Cargar datos de hoy
+                        const todayDate = new Date().toISOString().split('T')[0];
+                        const todayResponse = await fetch(`/api/load-data?date=${todayDate}`);
+                        const todayData = await todayResponse.json();
+                        // Cargar datos de ayer
+                        const yesterdayDate = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
+                        const yesterdayResponse = await fetch(`/api/load-data?date=${yesterdayDate}`);
+                        const yesterdayData = await yesterdayResponse.json();
+                        // Actualizar las secciones con los datos
+                        if (todayData) {
+                            const updatedTodaySections = initialSections.map({
+                                "Home.useEffect.loadInitialData.updatedTodaySections": (section)=>({
+                                        ...section,
+                                        fields: section.fields.map({
+                                            "Home.useEffect.loadInitialData.updatedTodaySections": (field)=>{
+                                                const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                                                return {
+                                                    ...field,
+                                                    value: todayData[fieldKey] ?? field.defaultValue
+                                                };
+                                            }
+                                        }["Home.useEffect.loadInitialData.updatedTodaySections"])
+                                    })
+                            }["Home.useEffect.loadInitialData.updatedTodaySections"]);
+                            setTodaySections(updatedTodaySections);
+                        }
+                        if (yesterdayData) {
+                            const updatedYesterdaySections = initialSections.map({
+                                "Home.useEffect.loadInitialData.updatedYesterdaySections": (section)=>({
+                                        ...section,
+                                        fields: section.fields.map({
+                                            "Home.useEffect.loadInitialData.updatedYesterdaySections": (field)=>{
+                                                const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                                                return {
+                                                    ...field,
+                                                    value: yesterdayData[fieldKey] ?? field.defaultValue
+                                                };
+                                            }
+                                        }["Home.useEffect.loadInitialData.updatedYesterdaySections"])
+                                    })
+                            }["Home.useEffect.loadInitialData.updatedYesterdaySections"]);
+                            setYesterdaySections(updatedYesterdaySections);
+                        }
+                    } catch (error) {
+                        console.error('Error loading initial data:', error);
+                    }
+                }
+            }["Home.useEffect.loadInitialData"];
+            loadInitialData();
         }
     }["Home.useEffect"], []);
     // Guardar cambios en localStorage cuando se modifican los campos
@@ -803,7 +902,7 @@ function Home() {
                         children: section.name
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 335,
+                        lineNumber: 345,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -813,42 +912,46 @@ function Home() {
                                 className: "space-y-4",
                                 children: leftColumn.map((field)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Field$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Field"], {
                                         field: field,
-                                        onChange: (value)=>handleFieldChange(section.id, field.id, value, isYesterday)
+                                        onChange: (value)=>handleFieldChange(section.id, field.id, value, isYesterday),
+                                        sectionId: section.id,
+                                        date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                                     }, field.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 339,
+                                        lineNumber: 349,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 337,
+                                lineNumber: 347,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-4",
                                 children: rightColumn.map((field)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Field$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Field"], {
                                         field: field,
-                                        onChange: (value)=>handleFieldChange(section.id, field.id, value, isYesterday)
+                                        onChange: (value)=>handleFieldChange(section.id, field.id, value, isYesterday),
+                                        sectionId: section.id,
+                                        date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                                     }, field.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 348,
+                                        lineNumber: 363,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 346,
+                                lineNumber: 361,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 336,
+                        lineNumber: 346,
                         columnNumber: 11
                     }, this)
                 ]
             }, section.id, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 334,
+                lineNumber: 344,
                 columnNumber: 9
             }, this);
         }
@@ -860,28 +963,30 @@ function Home() {
                     children: section.name
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 362,
+                    lineNumber: 382,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "space-y-4",
                     children: Array.isArray(section.fields) && section.fields.map((field)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Field$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Field"], {
                             field: field,
-                            onChange: (value)=>handleFieldChange(section.id, field.id, value, isYesterday)
+                            onChange: (value)=>handleFieldChange(section.id, field.id, value, isYesterday),
+                            sectionId: section.id,
+                            date: isYesterday ? new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
                         }, field.id, false, {
                             fileName: "[project]/src/app/page.tsx",
-                            lineNumber: 365,
+                            lineNumber: 385,
                             columnNumber: 13
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 363,
+                    lineNumber: 383,
                     columnNumber: 9
                 }, this)
             ]
         }, section.id, true, {
             fileName: "[project]/src/app/page.tsx",
-            lineNumber: 361,
+            lineNumber: 381,
             columnNumber: 7
         }, this);
     };
@@ -933,33 +1038,33 @@ function Home() {
                                         children: tab.name
                                     }, tab.id, false, {
                                         fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 408,
+                                        lineNumber: 433,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 402,
+                                lineNumber: 427,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ThemeToggle$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ThemeToggle"], {}, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 421,
+                                lineNumber: 446,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 401,
+                        lineNumber: 426,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/page.tsx",
-                    lineNumber: 400,
+                    lineNumber: 425,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 399,
+                lineNumber: 424,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -969,10 +1074,14 @@ function Home() {
                         children: [
                             Array.isArray(todaySections) && todaySections.map((section)=>renderSection(section)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UpdateButton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["UpdateButton"], {
-                                onUpdate: ()=>handleUpdate(false)
+                                onUpdate: ()=>handleUpdate(false),
+                                isYesterday: false,
+                                sections: todaySections,
+                                date: new Date().toISOString().split('T')[0],
+                                initialNotes: todaySections.find((s)=>s.id === 'notes')?.fields[0].value
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 430,
+                                lineNumber: 455,
                                 columnNumber: 13
                             }, this)
                         ]
@@ -982,10 +1091,13 @@ function Home() {
                             Array.isArray(yesterdaySections) && yesterdaySections.map((section)=>renderSection(section, true)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$UpdateButton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["UpdateButton"], {
                                 onUpdate: ()=>handleUpdate(true),
-                                isYesterday: true
+                                isYesterday: true,
+                                sections: yesterdaySections,
+                                date: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0],
+                                initialNotes: yesterdaySections.find((s)=>s.id === 'notes')?.fields[0].value
                             }, void 0, false, {
                                 fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 436,
+                                lineNumber: 467,
                                 columnNumber: 13
                             }, this)
                         ]
@@ -995,19 +1107,19 @@ function Home() {
                         children: "Stats coming soon..."
                     }, void 0, false, {
                         fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 440,
+                        lineNumber: 477,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 426,
+                lineNumber: 451,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/page.tsx",
-        lineNumber: 398,
+        lineNumber: 423,
         columnNumber: 5
     }, this);
 }

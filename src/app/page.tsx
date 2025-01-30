@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Field as FieldComponent } from '@/components/Field';
 import { Field, DailyData, Section } from '@/types';
-import { UpdateButton } from '@/components/UpdateButton';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { UpdateNotesButton } from '@/components/UpdateNotesButton';
 
 const initialSections: Section[] = [
   {
@@ -221,11 +221,11 @@ const initialSections: Section[] = [
   },
   {
     id: 'notes',
-    name: 'Notes',
+    name: 'Daily Takeaways',
     fields: [
       {
         id: 'notes',
-        name: 'Daily Notes',
+        name: '',
         type: 'text',
         required: false,
         defaultValue: '',
@@ -253,45 +253,55 @@ export default function Home() {
     return new Date().toISOString().split('T')[0];
   };
 
-  // Cargar datos guardados al iniciar
+  // Cargar datos desde Google Sheets
   useEffect(() => {
-    // Intentamos recuperar los datos del localStorage
-    const savedLastDate = localStorage.getItem(STORAGE_KEYS.LAST_SAVED_DATE) || '';
-    const currentDate = getCurrentDate();
+    const loadInitialData = async () => {
+      try {
+        // Cargar datos de hoy
+        const todayDate = new Date().toISOString().split('T')[0];
+        const todayResponse = await fetch(`/api/load-data?date=${todayDate}`);
+        const todayData = await todayResponse.json();
+        
+        // Cargar datos de ayer
+        const yesterdayDate = new Date(new Date().setDate(new Date().getDate() - 1))
+          .toISOString().split('T')[0];
+        const yesterdayResponse = await fetch(`/api/load-data?date=${yesterdayDate}`);
+        const yesterdayData = await yesterdayResponse.json();
 
-    let savedTodaySections: Section[];
-    let savedYesterdaySections: Section[];
+        // Actualizar las secciones con los datos
+        if (todayData) {
+          const updatedTodaySections = initialSections.map(section => ({
+            ...section,
+            fields: section.fields.map(field => {
+              const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+              return {
+                ...field,
+                value: todayData[fieldKey] ?? field.defaultValue
+              };
+            })
+          }));
+          setTodaySections(updatedTodaySections);
+        }
 
-    try {
-      const todayData = localStorage.getItem(STORAGE_KEYS.TODAY);
-      const yesterdayData = localStorage.getItem(STORAGE_KEYS.YESTERDAY);
-      
-      savedTodaySections = todayData ? JSON.parse(todayData) : initialSections;
-      savedYesterdaySections = yesterdayData ? JSON.parse(yesterdayData) : initialSections;
-    } catch (e) {
-      console.error('Error loading data from localStorage:', e);
-      savedTodaySections = initialSections;
-      savedYesterdaySections = initialSections;
-    }
+        if (yesterdayData) {
+          const updatedYesterdaySections = initialSections.map(section => ({
+            ...section,
+            fields: section.fields.map(field => {
+              const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+              return {
+                ...field,
+                value: yesterdayData[fieldKey] ?? field.defaultValue
+              };
+            })
+          }));
+          setYesterdaySections(updatedYesterdaySections);
+        }
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+      }
+    };
 
-    // Si es un nuevo día
-    if (savedLastDate && savedLastDate !== currentDate) {
-      // Mover los datos de hoy a ayer
-      localStorage.setItem(STORAGE_KEYS.YESTERDAY, JSON.stringify(savedTodaySections));
-      // Resetear los datos de hoy
-      localStorage.setItem(STORAGE_KEYS.TODAY, JSON.stringify(initialSections));
-      
-      setYesterdaySections(savedTodaySections);
-      setTodaySections(initialSections);
-    } else {
-      // Si es el mismo día o primer uso, cargar los datos guardados o usar iniciales
-      setTodaySections(savedTodaySections);
-      setYesterdaySections(savedYesterdaySections);
-    }
-
-    // Actualizar la fecha
-    localStorage.setItem(STORAGE_KEYS.LAST_SAVED_DATE, currentDate);
-    setLastSavedDate(currentDate);
+    loadInitialData();
   }, []);
 
   // Guardar cambios en localStorage cuando se modifican los campos
@@ -340,6 +350,11 @@ export default function Home() {
                   key={field.id}
                   field={field}
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? 
+                    new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                    new Date().toISOString().split('T')[0]
+                  }
                 />
               ))}
             </div>
@@ -349,9 +364,67 @@ export default function Home() {
                   key={field.id}
                   field={field}
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? 
+                    new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                    new Date().toISOString().split('T')[0]
+                  }
                 />
               ))}
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (section.id === 'notes') {
+      return (
+        <div key={section.id} className="mb-8">
+          <h2 className="text-xl font-bold mb-4">{section.name}</h2>
+          <div className="space-y-4">
+            <FieldComponent
+              key={section.fields[0].id}
+              field={section.fields[0]}
+              onChange={(value) => handleFieldChange(section.id, section.fields[0].id, value, isYesterday)}
+              sectionId={section.id}
+              date={isYesterday ? 
+                new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                new Date().toISOString().split('T')[0]
+              }
+            />
+            <UpdateNotesButton 
+              notes={section.fields[0].value as string}
+              initialNotes={isYesterday ? yesterdaySections.find(s => s.id === 'notes')?.fields[0].value as string : todaySections.find(s => s.id === 'notes')?.fields[0].value as string}
+              date={isYesterday ? 
+                new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                new Date().toISOString().split('T')[0]
+              }
+              onUpdate={async () => {
+                const currentDate = isYesterday ? 
+                  new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                  new Date().toISOString().split('T')[0];
+
+                const response = await fetch(`/api/load-data?date=${currentDate}`);
+                const data = await response.json();
+                if (data) {
+                  const updatedSections = initialSections.map(section => ({
+                    ...section,
+                    fields: section.fields.map(field => {
+                      const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                      return {
+                        ...field,
+                        value: data[fieldKey] ?? field.defaultValue
+                      };
+                    })
+                  }));
+                  if (isYesterday) {
+                    setYesterdaySections(updatedSections);
+                  } else {
+                    setTodaySections(updatedSections);
+                  }
+                }
+              }}
+            />
           </div>
         </div>
       );
@@ -366,32 +439,16 @@ export default function Home() {
               key={field.id}
               field={field}
               onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+              sectionId={section.id}
+              date={isYesterday ? 
+                new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                new Date().toISOString().split('T')[0]
+              }
             />
           ))}
         </div>
       </div>
     );
-  };
-
-  const handleUpdate = async (isYesterday: boolean = false) => {
-    // Aquí irá la lógica para actualizar la spreadsheet
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const date = new Date();
-    if (isYesterday) {
-      date.setDate(date.getDate() - 1);
-    }
-
-    // TODO: Implementar la actualización real a la spreadsheet
-    const dataToUpdate = {
-      date: date.toISOString().split('T')[0],
-      sections: isYesterday ? yesterdaySections : todaySections
-    };
-
-    console.log('Data to update:', dataToUpdate);
-    // TODO: Aquí implementaremos la lógica diferente para actualizar
-    // - Para today: crear nueva fila
-    // - Para yesterday: buscar y actualizar fila existente
   };
 
   return (
@@ -427,13 +484,11 @@ export default function Home() {
         {activeTab === 'today' && (
           <>
             {Array.isArray(todaySections) && todaySections.map(section => renderSection(section))}
-            <UpdateButton onUpdate={() => handleUpdate(false)} />
           </>
         )}
         {activeTab === 'yesterday' && (
           <>
             {Array.isArray(yesterdaySections) && yesterdaySections.map(section => renderSection(section, true))}
-            <UpdateButton onUpdate={() => handleUpdate(true)} isYesterday />
           </>
         )}
         {activeTab === 'stats' && (

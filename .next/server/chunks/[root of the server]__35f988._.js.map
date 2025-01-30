@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 60, "column": 0}, "map": {"version":3,"sources":["file:///Users/federicocaccia/code/daily-review/src/app/api/load-data/route.ts"],"sourcesContent":["import { loadDayData } from '../lib/spreadsheet';\nimport { NextResponse } from 'next/server';\n\nexport async function GET(request: Request) {\n  const { searchParams } = new URL(request.url);\n  const date = searchParams.get('date');\n\n  if (!date) {\n    return NextResponse.json({ error: 'Date is required' }, { status: 400 });\n  }\n\n  try {\n    const data = await loadDayData(date);\n    return NextResponse.json(data);\n  } catch (error) {\n    console.error('Error loading data:', error);\n    return NextResponse.json({ error: 'Failed to load data' }, { status: 500 });\n  }\n} "],"names":[],"mappings":";;;AAAA;AACA;;;AAEO,eAAe,IAAI,OAAgB;IACxC,MAAM,EAAE,YAAY,EAAE,GAAG,IAAI,IAAI,QAAQ,GAAG;IAC5C,MAAM,OAAO,aAAa,GAAG,CAAC;IAE9B,IAAI,CAAC,MAAM;QACT,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;YAAE,OAAO;QAAmB,GAAG;YAAE,QAAQ;QAAI;IACxE;IAEA,IAAI;QACF,MAAM,OAAO,MAAM,CAAA,GAAA,yIAAA,CAAA,cAAW,AAAD,EAAE;QAC/B,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;IAC3B,EAAE,OAAO,OAAO;QACd,QAAQ,KAAK,CAAC,uBAAuB;QACrC,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;YAAE,OAAO;QAAsB,GAAG;YAAE,QAAQ;QAAI;IAC3E;AACF"}},
+    {"offset": {"line": 89, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
