@@ -1,7 +1,100 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 
-let doc: GoogleSpreadsheet;
+// Constantes
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // ms
+const OPERATION_TIMEOUT = 5000; // 5 segundos máximo por operación
+const RATE_LIMIT_DELAY = 2000; // 2 segundos entre operaciones
+
+// Cache de conexión y datos
+let cachedDoc: GoogleSpreadsheet | null = null;
+let lastRequestTime = 0;
+let cachedRows: any[] | null = null;
+let lastRowsFetch = 0;
+const CACHE_TTL = 1000; // 1 segundo de TTL para el cache
+
+async function waitForRateLimit() {
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  
+  if (timeSinceLastRequest < RATE_LIMIT_DELAY) {
+    await wait(RATE_LIMIT_DELAY - timeSinceLastRequest);
+  }
+  
+  lastRequestTime = Date.now();
+}
+
+async function getSpreadsheetConnection() {
+  try {
+    if (!cachedDoc) {
+      const SCOPES = [
+        'https://www.googleapis.com/auth/spreadsheets',
+      ];
+
+      const jwt = new JWT({
+        email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+        key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        scopes: SCOPES,
+      });
+
+      cachedDoc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!, jwt);
+      await cachedDoc.loadInfo();
+    }
+    return cachedDoc;
+  } catch (error) {
+    cachedDoc = null;
+    console.error('Error getting spreadsheet connection:', error);
+    throw error;
+  }
+}
+
+async function getSheetRows(sheet: any) {
+  const now = Date.now();
+  if (cachedRows && (now - lastRowsFetch) < CACHE_TTL) {
+    return cachedRows;
+  }
+
+  await waitForRateLimit();
+  cachedRows = await sheet.getRows();
+  lastRowsFetch = now;
+  return cachedRows;
+}
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Función para ejecutar una operación con timeout
+async function withTimeout<T>(operation: () => Promise<T>): Promise<T> {
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    setTimeout(() => reject(new Error('Operation timed out')), OPERATION_TIMEOUT);
+  });
+
+  return Promise.race([operation(), timeoutPromise]);
+}
+
+async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await operation();
+    } catch (error: any) {
+      lastError = error;
+      console.error(`Attempt ${attempt} failed:`, error);
+      
+      if (attempt === MAX_RETRIES) throw error;
+      
+      // Si es un error de rate limit, esperamos más tiempo
+      const delay = error.status === 429 
+        ? RETRY_DELAY * Math.pow(2, attempt + 1)  // Más tiempo para rate limits
+        : RETRY_DELAY * Math.pow(2, attempt - 1);  // Tiempo normal para otros errores
+      
+      await wait(delay);
+    }
+  }
+  
+  throw lastError;
+}
 
 const HEADERS = [
   'date',
@@ -30,77 +123,66 @@ const HEADERS = [
   'notes'
 ];
 
-// Inicializar la conexión
-async function initializeSheet() {
-  if (!doc) {
+export async function updateField(date: string, sectionId: string, fieldId: string, value: string | number | boolean) {
+  return withRetry(async () => {
+    const doc = await getSpreadsheetConnection();
+    const sheet = doc.sheetsByIndex[0];
+    
+    // Una sola lectura para encontrar o crear la fila
+    const rows = await sheet.getRows();
+    const rowIndex = rows.findIndex(row => row.get('date') === date);
+    const fieldKey = `${sectionId}_${fieldId}`;
+
     try {
-      const SCOPES = [
-        'https://www.googleapis.com/auth/spreadsheets',
-      ];
-
-      const jwt = new JWT({
-        email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-        key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        scopes: SCOPES,
-      });
-
-      doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!, jwt);
-      await doc.loadInfo();
-
-      // Obtener la primera hoja
-      const sheet = doc.sheetsByIndex[0];
-      
-      try {
-        // Intentar cargar los headers existentes
-        await sheet.loadHeaderRow();
-      } catch (error) {
-        console.error('Error loading headers:', error);
-        // Si no hay headers, los establecemos
-        await sheet.setHeaderRow(HEADERS);
+      if (rowIndex === -1) {
+        // Si no existe la fila, la creamos con el campo específico
+        const newRow: Record<string, any> = {
+          date,
+          [fieldKey]: typeof value === 'boolean' ? value.toString().toUpperCase() : value.toString()
+        };
+        
+        // Solo una escritura para crear la fila
+        await sheet.addRow(newRow);
+      } else {
+        // Si existe, actualizamos solo el campo específico
+        const formattedValue = typeof value === 'boolean' ? value.toString().toUpperCase() : value.toString();
+        rows[rowIndex].set(fieldKey, formattedValue);
+        
+        // Solo una escritura para actualizar el campo
+        await rows[rowIndex].save();
       }
     } catch (error) {
-      console.error('Error initializing spreadsheet:', error);
-      throw new Error(`Failed to initialize spreadsheet: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Error in updateField operation:', {
+        error,
+        date,
+        sectionId,
+        fieldId,
+        value,
+        fieldKey
+      });
+      throw error;
     }
-  }
-}
-
-export async function updateField(date: string, sectionId: string, fieldId: string, value: string | number | boolean) {
-  await initializeSheet();
-  const sheet = doc.sheetsByIndex[0];
-  
-  const rows = await sheet.getRows();
-  const rowIndex = rows.findIndex(row => row.get('date') === date);
-  
-  if (rowIndex === -1) {
-    // Si no existe la fila, la creamos
-    await sheet.addRow({
-      date,
-      [`${sectionId}_${fieldId}`]: value
-    });
-  } else {
-    // Si existe, actualizamos el campo específico
-    rows[rowIndex].set(`${sectionId}_${fieldId}`, value);
-    await rows[rowIndex].save();
-  }
+  });
 }
 
 export async function updateNotes(date: string, notes: string) {
-  await initializeSheet();
-  const sheet = doc.sheetsByIndex[0];
-  
-  const rows = await sheet.getRows();
-  const rowIndex = rows.findIndex(row => row.get('date') === date);
-  
-  if (rowIndex === -1) {
-    await sheet.addRow({
-      date,
-      notes
-    });
-  } else {
-    rows[rowIndex].set('notes', notes);
-    await rows[rowIndex].save();
-  }
+  return withRetry(async () => {
+    const doc = await getSpreadsheetConnection();
+    const sheet = doc.sheetsByIndex[0];
+    
+    const rows = await sheet.getRows();
+    const rowIndex = rows.findIndex(row => row.get('date') === date);
+    
+    if (rowIndex === -1) {
+      await sheet.addRow({
+        date,
+        notes
+      });
+    } else {
+      rows[rowIndex].set('notes', notes);
+      await rows[rowIndex].save();
+    }
+  });
 }
 
 interface DayData {
@@ -108,40 +190,37 @@ interface DayData {
 }
 
 export async function loadDayData(date: string): Promise<DayData | null> {
-  await initializeSheet();
-  const sheet = doc.sheetsByIndex[0];
-  
-  const rows = await sheet.getRows();
-  const row = rows.find(row => row.get('date') === date);
-  
-  if (!row) return null;
-
-  // Convertir la fila a un objeto con todos los campos
-  const data: DayData = {};
-  HEADERS.forEach(header => {
-    const value = row.get(header);
+  return withRetry(async () => {
+    const doc = await getSpreadsheetConnection();
+    const sheet = doc.sheetsByIndex[0];
     
-    if (header === 'notes') {
-      // Para las notas, guardamos el valor directo sin procesar
-      data[header] = value || '';
-      console.log('Notes loaded:', value); // Debug
-    } else if (header === 'date') {
-      // Para la fecha, guardamos el string directo
-      data[header] = value;
-    } else {
-      // Para el resto de campos
-      if (value === 'TRUE' || value === 'true') {
-        data[header] = true;
-      } else if (value === 'FALSE' || value === 'false') {
-        data[header] = false;
-      } else if (!isNaN(Number(value)) && value !== '') {
-        data[header] = Number(value);
-      } else {
+    // Una sola lectura para obtener los datos del día
+    const rows = await sheet.getRows();
+    const row = rows.find(row => row.get('date') === date);
+    
+    if (!row) return null;
+
+    const data: DayData = {};
+    HEADERS.forEach(header => {
+      const value = row.get(header);
+      
+      if (header === 'notes') {
         data[header] = value || '';
+      } else if (header === 'date') {
+        data[header] = value;
+      } else {
+        if (value === 'TRUE' || value === 'true') {
+          data[header] = true;
+        } else if (value === 'FALSE' || value === 'false') {
+          data[header] = false;
+        } else if (!isNaN(Number(value)) && value !== '') {
+          data[header] = Number(value);
+        } else {
+          data[header] = value || '';
+        }
       }
-    }
+    });
+    
+    return data;
   });
-  
-  console.log('Full loaded data:', data); // Para debugging
-  return data;
 } 

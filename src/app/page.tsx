@@ -134,7 +134,7 @@ const initialSections: Section[] = [
     name: 'Productivity',
     fields: [
       {
-        id: 'level',
+        id: 'productivity_level',
         name: 'Productivity Level',
         type: 'slider',
         required: true,
@@ -142,7 +142,7 @@ const initialSections: Section[] = [
         value: 1
       },
       {
-        id: 'reading',
+        id: 'reading_time',
         name: 'Reading Time',
         type: 'minutes',
         required: true,
@@ -247,60 +247,67 @@ export default function Home() {
         // Cargar datos de hoy
         const todayDate = new Date().toISOString().split('T')[0];
         const todayResponse = await fetch(`/api/load-data?date=${todayDate}`);
-        if (!todayResponse.ok) {
-          const errorData = await todayResponse.json();
-          console.error('Error loading today data:', {
-            status: todayResponse.status,
-            statusText: todayResponse.statusText,
-            error: errorData
-          });
-          throw new Error(`Failed to load today's data: ${errorData.details || errorData.error}`);
+        let todayData = null;
+        
+        if (todayResponse.status !== 404) {
+          if (!todayResponse.ok) {
+            const errorData = await todayResponse.json();
+            console.error('Error loading today data:', {
+              status: todayResponse.status,
+              statusText: todayResponse.statusText,
+              error: errorData
+            });
+            throw new Error(`Failed to load today's data: ${errorData.details || errorData.error}`);
+          }
+          todayData = await todayResponse.json();
         }
-        const todayData = await todayResponse.json();
         
         // Cargar datos de ayer
         const yesterdayDate = new Date(new Date().setDate(new Date().getDate() - 1))
           .toISOString().split('T')[0];
         const yesterdayResponse = await fetch(`/api/load-data?date=${yesterdayDate}`);
-        if (!yesterdayResponse.ok) {
-          const errorData = await yesterdayResponse.json();
-          console.error('Error loading yesterday data:', {
-            status: yesterdayResponse.status,
-            statusText: yesterdayResponse.statusText,
-            error: errorData
-          });
-          throw new Error(`Failed to load yesterday's data: ${errorData.details || errorData.error}`);
-        }
-        const yesterdayData = await yesterdayResponse.json();
+        let yesterdayData = null;
 
-        // Actualizar las secciones con los datos
-        if (todayData) {
-          const updatedTodaySections = initialSections.map(section => ({
-            ...section,
-            fields: section.fields.map(field => {
-              const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
-              return {
-                ...field,
-                value: todayData[fieldKey] ?? field.defaultValue
-              };
-            })
-          }));
-          setTodaySections(updatedTodaySections);
+        if (yesterdayResponse.status !== 404) {
+          if (!yesterdayResponse.ok) {
+            const errorData = await yesterdayResponse.json();
+            console.error('Error loading yesterday data:', {
+              status: yesterdayResponse.status,
+              statusText: yesterdayResponse.statusText,
+              error: errorData
+            });
+            throw new Error(`Failed to load yesterday's data: ${errorData.details || errorData.error}`);
+          }
+          yesterdayData = await yesterdayResponse.json();
         }
 
-        if (yesterdayData) {
-          const updatedYesterdaySections = initialSections.map(section => ({
-            ...section,
-            fields: section.fields.map(field => {
-              const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
-              return {
-                ...field,
-                value: yesterdayData[fieldKey] ?? field.defaultValue
-              };
-            })
-          }));
-          setYesterdaySections(updatedYesterdaySections);
-        }
+        // Actualizar las secciones con los datos o valores por defecto
+        const updatedTodaySections = initialSections.map(section => ({
+          ...section,
+          fields: section.fields.map(field => {
+            const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+            const value = todayData ? todayData[fieldKey] : field.defaultValue;
+            return {
+              ...field,
+              value: value === undefined || value === '' ? field.defaultValue : value
+            };
+          })
+        }));
+        setTodaySections(updatedTodaySections);
+
+        const updatedYesterdaySections = initialSections.map(section => ({
+          ...section,
+          fields: section.fields.map(field => {
+            const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+            const value = yesterdayData ? yesterdayData[fieldKey] : field.defaultValue;
+            return {
+              ...field,
+              value: value === undefined || value === '' ? field.defaultValue : value
+            };
+          })
+        }));
+        setYesterdaySections(updatedYesterdaySections);
+
       } catch (error) {
         console.error('Error loading initial data:', error);
         // Aquí podrías mostrar un mensaje de error al usuario
@@ -311,19 +318,59 @@ export default function Home() {
   }, []);
 
   const handleFieldChange = (sectionId: string, fieldId: string, value: number | boolean | string, isYesterday: boolean = false) => {
+    console.log('Field change:', {
+      sectionId,
+      fieldId,
+      value,
+      isYesterday,
+      type: typeof value
+    });
+
     const setSections = isYesterday ? setYesterdaySections : setTodaySections;
     const sections = isYesterday ? yesterdaySections : todaySections;
 
-    setSections(sections.map(section => 
-      section.id === sectionId
-        ? {
-            ...section,
-            fields: section.fields.map(field =>
-              field.id === fieldId ? { ...field, value } : field
-            )
-          }
-        : section
-    ));
+    // Asegurarse de que el valor sea del tipo correcto
+    const section = sections.find(s => s.id === sectionId);
+    const field = section?.fields.find(f => f.id === fieldId);
+    
+    if (field) {
+      let processedValue = value;
+      
+      // Convertir valores según el tipo de campo
+      switch (field.type) {
+        case 'minutes':
+          processedValue = Number(value);
+          break;
+        case 'slider':
+          processedValue = Number(value);
+          break;
+        case 'boolean':
+          processedValue = Boolean(value);
+          break;
+        case 'text':
+          processedValue = String(value);
+          break;
+      }
+
+      console.log('Processed value:', {
+        original: value,
+        processed: processedValue,
+        fieldType: field.type
+      });
+
+      setSections(sections.map(section => 
+        section.id === sectionId
+          ? {
+              ...section,
+              fields: section.fields.map(field =>
+                field.id === fieldId ? { ...field, value: processedValue } : field
+              )
+            }
+          : section
+      ));
+    } else {
+      console.error('Field not found:', { sectionId, fieldId });
+    }
   };
 
   const renderSection = (section: Section, isYesterday: boolean = false) => {
@@ -372,52 +419,59 @@ export default function Home() {
 
     if (section.id === 'notes') {
       return (
-        <div key={section.id} className="mb-8">
-          <h2 className="text-xl font-bold mb-4">{section.name}</h2>
-          <div className="space-y-4">
-            <FieldComponent
-              key={section.fields[0].id}
-              field={section.fields[0]}
-              onChange={(value) => handleFieldChange(section.id, section.fields[0].id, value, isYesterday)}
-              sectionId={section.id}
-              date={isYesterday ? 
-                new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                new Date().toISOString().split('T')[0]
-              }
-            />
-            <UpdateNotesButton 
-              notes={section.fields[0].value as string}
-              initialNotes={isYesterday ? yesterdaySections.find(s => s.id === 'notes')?.fields[0].value as string : todaySections.find(s => s.id === 'notes')?.fields[0].value as string}
-              date={isYesterday ? 
-                new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                new Date().toISOString().split('T')[0]
-              }
-              onUpdate={async () => {
-                const currentDate = isYesterday ? 
+        <div key={section.id} className="mb-12">
+          <h2 className="text-xl font-semibold mb-6">Daily Takeaways</h2>
+          <div className="w-full space-y-8">
+            <div className="w-full">
+              <FieldComponent
+                key={section.fields[0].id}
+                field={{
+                  ...section.fields[0],
+                  name: ''  // Quitamos el nombre ya que está en el título
+                }}
+                onChange={(value) => handleFieldChange(section.id, section.fields[0].id, value, isYesterday)}
+                sectionId={section.id}
+                date={isYesterday ? 
                   new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                  new Date().toISOString().split('T')[0];
-
-                const response = await fetch(`/api/load-data?date=${currentDate}`);
-                const data = await response.json();
-                if (data) {
-                  const updatedSections = initialSections.map(section => ({
-                    ...section,
-                    fields: section.fields.map(field => {
-                      const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
-                      return {
-                        ...field,
-                        value: data[fieldKey] ?? field.defaultValue
-                      };
-                    })
-                  }));
-                  if (isYesterday) {
-                    setYesterdaySections(updatedSections);
-                  } else {
-                    setTodaySections(updatedSections);
-                  }
+                  new Date().toISOString().split('T')[0]
                 }
-              }}
-            />
+              />
+            </div>
+            <div className="flex justify-center">
+              <UpdateNotesButton 
+                notes={section.fields[0].value as string}
+                initialNotes={isYesterday ? yesterdaySections.find(s => s.id === 'notes')?.fields[0].value as string : todaySections.find(s => s.id === 'notes')?.fields[0].value as string}
+                date={isYesterday ? 
+                  new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                  new Date().toISOString().split('T')[0]
+                }
+                onUpdate={async () => {
+                  const currentDate = isYesterday ? 
+                    new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
+                    new Date().toISOString().split('T')[0];
+
+                  const response = await fetch(`/api/load-data?date=${currentDate}`);
+                  const data = await response.json();
+                  if (data) {
+                    const updatedSections = initialSections.map(section => ({
+                      ...section,
+                      fields: section.fields.map(field => {
+                        const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                        return {
+                          ...field,
+                          value: data[fieldKey] ?? field.defaultValue
+                        };
+                      })
+                    }));
+                    if (isYesterday) {
+                      setYesterdaySections(updatedSections);
+                    } else {
+                      setTodaySections(updatedSections);
+                    }
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       );

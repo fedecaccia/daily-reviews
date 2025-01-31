@@ -202,14 +202,18 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
   return (
     <div className={`mb-4 ${
       field.type === 'text' 
-        ? 'block' 
+        ? 'w-full block' 
         : 'grid grid-cols-2 gap-4 items-center'
     }`}>
-      <label className="font-medium">
-        {field.name}
-        {field.required && <span className="text-red-500">*</span>}
-      </label>
-      {renderField()}
+      {field.name && (
+        <label className="font-medium text-[var(--text-primary)]">
+          {field.name}
+          {field.required && <span className="text-red-500">*</span>}
+        </label>
+      )}
+      <div className={field.type === 'text' ? 'w-full' : ''}>
+        {renderField()}
+      </div>
     </div>
   );
 }; 
