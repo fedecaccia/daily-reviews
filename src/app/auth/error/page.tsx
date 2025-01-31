@@ -9,7 +9,7 @@ export default function AuthError() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--background)] text-[var(--text-primary)]">
       <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
       <p className="mb-4">You must use an authorized email address to access this application.</p>
-      <p className="mb-8">Allowed emails: fede@ratherlabs.com, federicoagustincaccia@gmail.com</p>
+      <p className="mb-8">Allowed emails: only fede emails</p>
       <div className="flex gap-4">
         <button
           onClick={() => router.push('/api/auth/signin')}
