@@ -219,6 +219,10 @@ export async function updateField(date: string, sectionId: string, fieldId: stri
     
     // Una sola lectura para encontrar o crear la fila
     const rows = await sheet.getRows();
+    if (!rows) {
+      throw new Error('Failed to get sheet rows');
+    }
+    
     const rowIndex = rows.findIndex(row => row.get('date') === date);
     const fieldKey = `${sectionId}_${fieldId}`;
 
@@ -336,6 +340,10 @@ export async function ensureAndLoadDay(date: string): Promise<DayData | null> {
     
     // Una sola lectura para obtener/crear los datos del día
     const rows = await getSheetRows(sheet);
+    if (!rows) {
+      throw new Error('Failed to get sheet rows');
+    }
+    
     let row = rows.find(row => row.get('date') === date);
     
     if (!row) {
@@ -406,6 +414,10 @@ export async function ensureDayExists(date: string): Promise<void> {
     
     // Verificar si ya existe la fila
     const rows = await sheet.getRows();
+    if (!rows) {
+      throw new Error('Failed to get sheet rows');
+    }
+    
     const rowExists = rows.some(row => row.get('date') === date);
     
     if (!rowExists) {
