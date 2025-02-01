@@ -235,6 +235,17 @@ const initialSections: Section[] = [
   }
 ];
 
+function getLocalDate() {
+  const now = new Date();
+  return now.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD en la zona horaria local
+}
+
+function getYesterdayLocalDate() {
+  const now = new Date();
+  now.setDate(now.getDate() - 1);
+  return now.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD en la zona horaria local
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'today' | 'yesterday' | 'stats'>('today');
   const [todaySections, setTodaySections] = useState<Section[]>(initialSections);
@@ -245,7 +256,7 @@ export default function Home() {
     const loadInitialData = async () => {
       try {
         // Cargar datos de hoy
-        const todayDate = new Date().toISOString().split('T')[0];
+        const todayDate = getLocalDate();
         const todayResponse = await fetch(`/api/load-data?date=${todayDate}`);
         let todayData = null;
         
@@ -263,8 +274,7 @@ export default function Home() {
         }
         
         // Cargar datos de ayer
-        const yesterdayDate = new Date(new Date().setDate(new Date().getDate() - 1))
-          .toISOString().split('T')[0];
+        const yesterdayDate = getYesterdayLocalDate();
         const yesterdayResponse = await fetch(`/api/load-data?date=${yesterdayDate}`);
         let yesterdayData = null;
 
@@ -392,8 +402,8 @@ export default function Home() {
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                   sectionId={section.id}
                   date={isYesterday ? 
-                    new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                    new Date().toISOString().split('T')[0]
+                    getYesterdayLocalDate() : 
+                    getLocalDate()
                   }
                 />
               ))}
@@ -406,8 +416,8 @@ export default function Home() {
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                   sectionId={section.id}
                   date={isYesterday ? 
-                    new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                    new Date().toISOString().split('T')[0]
+                    getYesterdayLocalDate() : 
+                    getLocalDate()
                   }
                 />
               ))}
@@ -432,8 +442,8 @@ export default function Home() {
                 onChange={(value) => handleFieldChange(section.id, section.fields[0].id, value, isYesterday)}
                 sectionId={section.id}
                 date={isYesterday ? 
-                  new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                  new Date().toISOString().split('T')[0]
+                  getYesterdayLocalDate() : 
+                  getLocalDate()
                 }
               />
             </div>
@@ -442,13 +452,13 @@ export default function Home() {
                 notes={section.fields[0].value as string}
                 initialNotes={isYesterday ? yesterdaySections.find(s => s.id === 'notes')?.fields[0].value as string : todaySections.find(s => s.id === 'notes')?.fields[0].value as string}
                 date={isYesterday ? 
-                  new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                  new Date().toISOString().split('T')[0]
+                  getYesterdayLocalDate() : 
+                  getLocalDate()
                 }
                 onUpdate={async () => {
                   const currentDate = isYesterday ? 
-                    new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                    new Date().toISOString().split('T')[0];
+                    getYesterdayLocalDate() : 
+                    getLocalDate();
 
                   const response = await fetch(`/api/load-data?date=${currentDate}`);
                   const data = await response.json();
@@ -488,8 +498,8 @@ export default function Home() {
               onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
               sectionId={section.id}
               date={isYesterday ? 
-                new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] : 
-                new Date().toISOString().split('T')[0]
+                getYesterdayLocalDate() : 
+                getLocalDate()
               }
             />
           ))}
