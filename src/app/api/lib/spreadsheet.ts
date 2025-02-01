@@ -28,38 +28,27 @@ async function waitForRateLimit() {
 async function ensureHeaders(sheet: any) {
   try {
     // Primero cargar la hoja
-    await sheet.loadCells('A1:Z1');
-    
-    // Obtener los headers actuales y su posición
-    const existingHeadersMap = new Map<string, number>();
-    let lastUsedColumn = -1;
-    
-    for (let i = 0; i < 26; i++) {
-      const cell = sheet.getCell(0, i);
-      if (cell.value) {
-        existingHeadersMap.set(cell.value.toString(), i);
-        lastUsedColumn = i;
-      } else if (lastUsedColumn === -1) {
-        continue;
-      } else {
-        break;
-      }
-    }
+    await sheet.loadHeaderRow();
+    const headerValues = sheet.headerValues;
     
     // Verificar qué headers faltan
-    const missingHeaders = HEADERS.filter(header => !existingHeadersMap.has(header));
+    const missingHeaders = HEADERS.filter(header => !headerValues.includes(header));
     
     if (missingHeaders.length > 0) {
       console.log('Adding new headers at the end:', missingHeaders);
       
-      // Agregar los headers faltantes al final
-      for (const header of missingHeaders) {
-        lastUsedColumn++;
-        const cell = sheet.getCell(0, lastUsedColumn);
-        cell.value = header;
+      // Calcular el número total de columnas necesarias
+      const totalColumns = headerValues.length + missingHeaders.length;
+      
+      // Redimensionar la hoja si es necesario
+      if (sheet.columnCount < totalColumns) {
+        console.log(`Resizing sheet from ${sheet.columnCount} to ${totalColumns} columns`);
+        await sheet.resize({ columnCount: totalColumns });
       }
       
-      await sheet.saveUpdatedCells();
+      // Agregar los headers faltantes al final
+      const newHeaders = [...headerValues, ...missingHeaders];
+      await sheet.setHeaderRow(newHeaders);
     }
   } catch (error) {
     console.error('Error ensuring headers:', error);
@@ -156,8 +145,14 @@ export const HEADERS = [
   'workout_aerobic',
   'relax_yoga',
   'relax_meditation',
+  'relax_tea',
   'health_sleep_seven',
   'health_acidity',
+  'health_systolic',
+  'health_diastolic',
+  'health_headache',
+  'habits_nail_biting',
+  'habits_posture',
   'productivity_level',
   'productivity_reading_time',
   'nutrition_fruits',
@@ -184,8 +179,14 @@ const FIELD_TYPES: Record<string, 'boolean' | 'minutes' | 'slider' | 'text'> = {
   'workout_aerobic': 'boolean',
   'relax_yoga': 'boolean',
   'relax_meditation': 'boolean',
+  'relax_tea': 'boolean',
   'health_sleep_seven': 'boolean',
   'health_acidity': 'boolean',
+  'health_systolic': 'minutes',
+  'health_diastolic': 'minutes',
+  'health_headache': 'boolean',
+  'habits_nail_biting': 'boolean',
+  'habits_posture': 'boolean',
   'productivity_level': 'slider',
   'productivity_reading_time': 'minutes',
   'nutrition_fruits': 'minutes',

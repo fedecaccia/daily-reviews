@@ -114,6 +114,14 @@ const initialSections: Section[] = [
         required: true,
         defaultValue: false,
         value: false
+      },
+      {
+        id: 'tea',
+        name: 'Relaxing Tea',
+        type: 'boolean',
+        required: true,
+        defaultValue: false,
+        value: false
       }
     ]
   },
@@ -121,6 +129,24 @@ const initialSections: Section[] = [
     id: 'health',
     name: 'Health',
     fields: [
+      {
+        id: 'systolic',
+        name: 'Max Systolic Pressure (mmHg)',
+        type: 'minutes',
+        required: true,
+        defaultValue: 120,
+        value: 120,
+        step: 5
+      },
+      {
+        id: 'diastolic',
+        name: 'Max Diastolic Pressure (mmHg)',
+        type: 'minutes',
+        required: true,
+        defaultValue: 80,
+        value: 80,
+        step: 5
+      },
       {
         id: 'sleep_seven',
         name: 'Slept 7+ hours',
@@ -132,6 +158,36 @@ const initialSections: Section[] = [
       {
         id: 'acidity',
         name: 'Acidity',
+        type: 'boolean',
+        required: true,
+        defaultValue: false,
+        value: false
+      },
+      {
+        id: 'headache',
+        name: 'Headache',
+        type: 'boolean',
+        required: true,
+        defaultValue: false,
+        value: false
+      }
+    ]
+  },
+  {
+    id: 'habits',
+    name: 'Habits',
+    fields: [
+      {
+        id: 'nail_biting',
+        name: 'Nail Biting',
+        type: 'boolean',
+        required: true,
+        defaultValue: false,
+        value: false
+      },
+      {
+        id: 'posture',
+        name: 'Good Posture',
         type: 'boolean',
         required: true,
         defaultValue: false,
@@ -428,7 +484,21 @@ export default function Home() {
       return (
         <div key={section.id} className="mb-8">
           <h2 className="text-xl font-bold mb-4">{section.name}</h2>
-          <div className="grid grid-cols-2 gap-x-8 mb-4">
+          {runningField && (
+            <div className="mb-6">
+              <FieldComponent
+                key={runningField.id}
+                field={runningField}
+                onChange={(value) => handleFieldChange(section.id, runningField.id, value, isYesterday)}
+                sectionId={section.id}
+                date={isYesterday ? 
+                  getYesterdayLocalDate() : 
+                  getLocalDate()
+                }
+              />
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-x-8">
             <div className="space-y-4">
               {leftColumn.map(field => (
                 <FieldComponent
@@ -458,20 +528,69 @@ export default function Home() {
               ))}
             </div>
           </div>
-          {runningField && (
-            <div className="mt-4">
+        </div>
+      );
+    }
+
+    if (section.id === 'health') {
+      const fields = section.fields;
+      // Primero los campos numéricos
+      const numericFields = fields.filter(field => field.type === 'minutes');
+      // Luego los campos booleanos en columnas
+      const booleanFields = fields.filter(field => field.type === 'boolean');
+      const midPoint = Math.ceil(booleanFields.length / 2);
+      const leftColumn = booleanFields.slice(0, midPoint);
+      const rightColumn = booleanFields.slice(midPoint);
+
+      return (
+        <div key={section.id} className="mb-8">
+          <h2 className="text-xl font-bold mb-4">{section.name}</h2>
+          {/* Campos numéricos primero */}
+          <div className="space-y-4 mb-4">
+            {numericFields.map(field => (
               <FieldComponent
-                key={runningField.id}
-                field={runningField}
-                onChange={(value) => handleFieldChange(section.id, runningField.id, value, isYesterday)}
+                key={field.id}
+                field={field}
+                onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                 sectionId={section.id}
                 date={isYesterday ? 
                   getYesterdayLocalDate() : 
                   getLocalDate()
                 }
               />
+            ))}
+          </div>
+          {/* Campos booleanos en columnas */}
+          <div className="grid grid-cols-2 gap-x-8">
+            <div className="space-y-4">
+              {leftColumn.map(field => (
+                <FieldComponent
+                  key={field.id}
+                  field={field}
+                  onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? 
+                    getYesterdayLocalDate() : 
+                    getLocalDate()
+                  }
+                />
+              ))}
             </div>
-          )}
+            <div className="space-y-4">
+              {rightColumn.map(field => (
+                <FieldComponent
+                  key={field.id}
+                  field={field}
+                  onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? 
+                    getYesterdayLocalDate() : 
+                    getLocalDate()
+                  }
+                />
+              ))}
+            </div>
+          </div>
         </div>
       );
     }

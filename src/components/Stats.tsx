@@ -33,18 +33,35 @@ interface StatsProps {
 
 // Configuración simplificada de métricas
 const METRICS: Metric[] = [
+  // Workout
   { key: 'workout_running', name: 'Running (minutes)', type: 'number', aggregation: 'sum' },
   { key: 'workout_abs', name: 'Abs', type: 'boolean', aggregation: 'average' },
   { key: 'workout_legs', name: 'Legs', type: 'boolean', aggregation: 'average' },
   { key: 'workout_aerobic', name: 'Aerobic', type: 'boolean', aggregation: 'average' },
+  
+  // Health
   { key: 'health_sleep_seven', name: 'Sleep 7+ hours', type: 'boolean', aggregation: 'average' },
   { key: 'health_acidity', name: 'Acidity', type: 'boolean', aggregation: 'average' },
+  { key: 'health_systolic', name: 'Max Systolic Pressure (mmHg)', type: 'number', aggregation: 'average', min_value: 120, max_value: 160 },
+  { key: 'health_diastolic', name: 'Max Diastolic Pressure (mmHg)', type: 'number', aggregation: 'average', min_value: 80, max_value: 100 },
+  { key: 'health_headache', name: 'Headache', type: 'boolean', aggregation: 'average' },
+  
+  // Habits
+  { key: 'habits_nail_biting', name: 'Nail Biting', type: 'boolean', aggregation: 'average' },
+  { key: 'habits_posture', name: 'Good Posture', type: 'boolean', aggregation: 'average' },
+  
+  // Productivity
   { key: 'productivity_level', name: 'Productivity Level', type: 'number', aggregation: 'average', min_value: 1, max_value: 5 },
   { key: 'productivity_reading_time', name: 'Reading Time (minutes)', type: 'number', aggregation: 'sum' },
+  
+  // Nutrition
   { key: 'nutrition_fruits', name: 'Fruits', type: 'number', aggregation: 'sum' },
   { key: 'nutrition_yogurt', name: 'Yogurt', type: 'boolean', aggregation: 'average' },
   { key: 'nutrition_polyphenols', name: 'Polyphenols', type: 'boolean', aggregation: 'average' },
-  { key: 'life_gaming', name: 'Gaming', type: 'boolean', aggregation: 'average' }
+  
+  // Relax
+  { key: 'life_gaming', name: 'Gaming', type: 'boolean', aggregation: 'average' },
+  { key: 'relax_tea', name: 'Relaxing Tea', type: 'boolean', aggregation: 'average' }
 ];
 
 export const Stats: React.FC<StatsProps> = ({ data }) => {
