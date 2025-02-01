@@ -1,8 +1,8 @@
 # Daily Review
 
-Personal goal tracker. Built 100% with AI.
+Personal goal tracker. Edit fields and add new ones!
 
-Remember to update your env variables!
+Remember to update your env variables to sync with your Google Sheet.
 
 <img width="492" alt="Screenshot 2025-02-01 at 9 48 09 AM" src="https://github.com/user-attachments/assets/2e395d73-a825-4170-bf2d-ecd48a9966dd" />
 
