@@ -330,80 +330,58 @@ interface DayData {
 
 export async function ensureAndLoadDay(date: string): Promise<DayData | null> {
   return withRetry(async () => {
-    // Verificar cache
-    if (ROW_CACHE[date] && (Date.now() - ROW_CACHE[date].timestamp) < CACHE_TTL) {
-      return ROW_CACHE[date].data;
-    }
-
     const doc = await getSpreadsheetConnection();
     const sheet = doc.sheetsByIndex[0];
     
-    // Una sola lectura para obtener/crear los datos del día
-    const rows = await getSheetRows(sheet);
-    if (!rows) {
-      throw new Error('Failed to get sheet rows');
-    }
+    // Intentar cargar la fila existente
+    const rows = await sheet.getRows();
+    const existingRow = rows?.find(row => row.get('date') === date);
     
-    let row = rows.find(row => row.get('date') === date);
-    
-    if (!row) {
-      // Crear la fila con valores por defecto
-      const newRow: Record<string, any> = {
-        date,
-      };
-      
-      // Inicializar todos los campos con sus valores por defecto
+    if (existingRow) {
+      // Si la fila existe, convertir los valores según su tipo
+      const data: DayData = {};
       HEADERS.forEach(header => {
-        if (header === 'date') return;
-        
+        const value = existingRow.get(header);
         const fieldType = FIELD_TYPES[header];
+        
         switch (fieldType) {
           case 'boolean':
-            newRow[header] = 'FALSE';
+            data[header] = value?.toLowerCase() === 'true';
             break;
           case 'minutes':
-            newRow[header] = '0';
-            break;
           case 'slider':
-            newRow[header] = '1';
+            data[header] = parseInt(value || '0', 10);
             break;
-          case 'text':
-            newRow[header] = '';
-            break;
+          default:
+            data[header] = value || '';
         }
       });
-      
-      row = await sheet.addRow(newRow);
+      return data;
     }
-
-    const data: DayData = {};
+    
+    // Si no existe, crear una nueva fila con valores por defecto
+    const newRow: Record<string, any> = { date };
     HEADERS.forEach(header => {
-      const value = row.get(header);
+      if (header === 'date') return;
       
-      if (header === 'notes') {
-        data[header] = value || '';
-      } else if (header === 'date') {
-        data[header] = value;
-      } else {
-        if (value === 'TRUE' || value === 'true') {
-          data[header] = true;
-        } else if (value === 'FALSE' || value === 'false') {
-          data[header] = false;
-        } else if (!isNaN(Number(value)) && value !== '') {
-          data[header] = Number(value);
-        } else {
-          data[header] = value || '';
-        }
+      const fieldType = FIELD_TYPES[header];
+      switch (fieldType) {
+        case 'boolean':
+          newRow[header] = false;
+          break;
+        case 'minutes':
+        case 'slider':
+          newRow[header] = 0;
+          break;
+        default:
+          newRow[header] = '';
       }
     });
-
-    // Guardar en cache
-    ROW_CACHE[date] = {
-      data,
-      timestamp: Date.now()
-    };
     
-    return data;
+    // Agregar la nueva fila
+    await sheet.addRow(newRow);
+    
+    return newRow;
   });
 }
 
@@ -412,41 +390,31 @@ export async function ensureDayExists(date: string): Promise<void> {
     const doc = await getSpreadsheetConnection();
     const sheet = doc.sheetsByIndex[0];
     
-    // Verificar si ya existe la fila
+    // Intentar cargar la fila existente
     const rows = await sheet.getRows();
-    if (!rows) {
-      throw new Error('Failed to get sheet rows');
-    }
+    const existingRow = rows?.find(row => row.get('date') === date);
     
-    const rowExists = rows.some(row => row.get('date') === date);
-    
-    if (!rowExists) {
-      // Crear la fila con valores por defecto
-      const newRow: Record<string, any> = {
-        date,
-      };
-      
-      // Inicializar todos los campos con sus valores por defecto
+    if (!existingRow) {
+      // Si no existe, crear una nueva fila con valores por defecto
+      const newRow: Record<string, any> = { date };
       HEADERS.forEach(header => {
         if (header === 'date') return;
         
         const fieldType = FIELD_TYPES[header];
         switch (fieldType) {
           case 'boolean':
-            newRow[header] = 'FALSE';
+            newRow[header] = false;
             break;
           case 'minutes':
-            newRow[header] = '0';
-            break;
           case 'slider':
-            newRow[header] = '1';
+            newRow[header] = 0;
             break;
-          case 'text':
+          default:
             newRow[header] = '';
-            break;
         }
       });
       
+      // Agregar la nueva fila
       await sheet.addRow(newRow);
     }
   });
