@@ -319,6 +319,7 @@ export default function Home() {
   const [yesterdaySections, setYesterdaySections] = useState<Section[]>(initialSections);
   const [historicalData, setHistoricalData] = useState<Array<any>>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showStats, setShowStats] = useState(false);
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -700,7 +701,19 @@ export default function Home() {
               </>
             )}
             {activeTab === 'stats' && (
-              <Stats data={historicalData} />
+              <>
+                <Stats data={historicalData} />
+                <div className="flex justify-center mt-8 mb-8">
+                  <a
+                    href={process.env.NEXT_PUBLIC_SHEET_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-[var(--color-blue)] text-[var(--text-primary)] rounded-lg hover:bg-opacity-80 transition-opacity"
+                  >
+                    Raw Data
+                  </a>
+                </div>
+              </>
             )}
           </>
         )}

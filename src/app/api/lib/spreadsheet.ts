@@ -4,15 +4,16 @@ import { JWT } from 'google-auth-library';
 // Constantes
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // ms
-const OPERATION_TIMEOUT = 5000; // 5 segundos máximo por operación
-const RATE_LIMIT_DELAY = 2000; // 2 segundos entre operaciones
+const OPERATION_TIMEOUT = 1000; // 5 segundos máximo por operación
+const RATE_LIMIT_DELAY = 1000; // Aumentado a 5 segundos entre operaciones
 
 // Cache de conexión y datos
 let cachedDoc: GoogleSpreadsheet | null = null;
 let lastRequestTime = 0;
 let cachedRows: any[] | null = null;
 let lastRowsFetch = 0;
-const CACHE_TTL = 1000; // 1 segundo de TTL para el cache
+const CACHE_TTL = 5000; // Aumentado a 5 segundos de TTL para el cache
+const ROW_CACHE: { [key: string]: any } = {}; // Cache para filas individuales
 
 async function waitForRateLimit() {
   const now = Date.now();
@@ -58,25 +59,37 @@ async function ensureHeaders(sheet: any) {
 
 async function getSpreadsheetConnection() {
   try {
-    if (!cachedDoc) {
-      const SCOPES = [
-        'https://www.googleapis.com/auth/spreadsheets',
-      ];
-
-      const jwt = new JWT({
-        email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-        key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        scopes: SCOPES,
-      });
-
-      cachedDoc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!, jwt);
-      await cachedDoc.loadInfo();
-      
-      // Asegurarnos de que existan todas las columnas necesarias
-      const sheet = cachedDoc.sheetsByIndex[0];
-      await ensureHeaders(sheet);
+    // Si ya tenemos una conexión cacheada, verificar que siga siendo válida
+    if (cachedDoc) {
+      try {
+        await cachedDoc.loadInfo();
+        return cachedDoc;
+      } catch (error) {
+        console.log('Cached connection invalid, creating new one');
+        cachedDoc = null;
+      }
     }
-    return cachedDoc;
+
+    const SCOPES = [
+      'https://www.googleapis.com/auth/spreadsheets',
+    ];
+
+    const jwt = new JWT({
+      email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+      key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      scopes: SCOPES,
+    });
+
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!, jwt);
+    await doc.loadInfo(); // Asegurarnos de que el documento está cargado
+    
+    // Asegurarnos de que existan todas las columnas necesarias
+    const sheet = doc.sheetsByIndex[0];
+    await ensureHeaders(sheet);
+
+    // Solo cachear después de que todo esté correctamente inicializado
+    cachedDoc = doc;
+    return doc;
   } catch (error) {
     cachedDoc = null;
     console.error('Error getting spreadsheet connection:', error);
@@ -206,6 +219,10 @@ export async function updateField(date: string, sectionId: string, fieldId: stri
     
     // Una sola lectura para encontrar o crear la fila
     const rows = await sheet.getRows();
+    if (!rows) {
+      throw new Error('Failed to get sheet rows');
+    }
+    
     const rowIndex = rows.findIndex(row => row.get('date') === date);
     const fieldKey = `${sectionId}_${fieldId}`;
 
@@ -311,16 +328,53 @@ interface DayData {
   [key: string]: string | number | boolean;
 }
 
-export async function loadDayData(date: string): Promise<DayData | null> {
+export async function ensureAndLoadDay(date: string): Promise<DayData | null> {
   return withRetry(async () => {
+    // Verificar cache
+    if (ROW_CACHE[date] && (Date.now() - ROW_CACHE[date].timestamp) < CACHE_TTL) {
+      return ROW_CACHE[date].data;
+    }
+
     const doc = await getSpreadsheetConnection();
     const sheet = doc.sheetsByIndex[0];
     
-    // Una sola lectura para obtener los datos del día
-    const rows = await sheet.getRows();
-    const row = rows.find(row => row.get('date') === date);
+    // Una sola lectura para obtener/crear los datos del día
+    const rows = await getSheetRows(sheet);
+    if (!rows) {
+      throw new Error('Failed to get sheet rows');
+    }
     
-    if (!row) return null;
+    let row = rows.find(row => row.get('date') === date);
+    
+    if (!row) {
+      // Crear la fila con valores por defecto
+      const newRow: Record<string, any> = {
+        date,
+      };
+      
+      // Inicializar todos los campos con sus valores por defecto
+      HEADERS.forEach(header => {
+        if (header === 'date') return;
+        
+        const fieldType = FIELD_TYPES[header];
+        switch (fieldType) {
+          case 'boolean':
+            newRow[header] = 'FALSE';
+            break;
+          case 'minutes':
+            newRow[header] = '0';
+            break;
+          case 'slider':
+            newRow[header] = '1';
+            break;
+          case 'text':
+            newRow[header] = '';
+            break;
+        }
+      });
+      
+      row = await sheet.addRow(newRow);
+    }
 
     const data: DayData = {};
     HEADERS.forEach(header => {
@@ -342,7 +396,58 @@ export async function loadDayData(date: string): Promise<DayData | null> {
         }
       }
     });
+
+    // Guardar en cache
+    ROW_CACHE[date] = {
+      data,
+      timestamp: Date.now()
+    };
     
     return data;
+  });
+}
+
+export async function ensureDayExists(date: string): Promise<void> {
+  return withRetry(async () => {
+    const doc = await getSpreadsheetConnection();
+    const sheet = doc.sheetsByIndex[0];
+    
+    // Verificar si ya existe la fila
+    const rows = await sheet.getRows();
+    if (!rows) {
+      throw new Error('Failed to get sheet rows');
+    }
+    
+    const rowExists = rows.some(row => row.get('date') === date);
+    
+    if (!rowExists) {
+      // Crear la fila con valores por defecto
+      const newRow: Record<string, any> = {
+        date,
+      };
+      
+      // Inicializar todos los campos con sus valores por defecto
+      HEADERS.forEach(header => {
+        if (header === 'date') return;
+        
+        const fieldType = FIELD_TYPES[header];
+        switch (fieldType) {
+          case 'boolean':
+            newRow[header] = 'FALSE';
+            break;
+          case 'minutes':
+            newRow[header] = '0';
+            break;
+          case 'slider':
+            newRow[header] = '1';
+            break;
+          case 'text':
+            newRow[header] = '';
+            break;
+        }
+      });
+      
+      await sheet.addRow(newRow);
+    }
   });
 } 

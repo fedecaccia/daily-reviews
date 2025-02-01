@@ -7,7 +7,6 @@ import {
   CartesianGrid, 
   Legend,
   ResponsiveContainer,
-  Brush
 } from 'recharts';
 
 type TimeRange = 'daily' | 'weekly' | 'monthly';
@@ -233,7 +232,6 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
                 dot={true}
                 strokeWidth={2}
               />
-              <Brush dataKey="date" height={30} stroke="#8884d8" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -350,7 +348,6 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
                 strokeWidth={2}
                 connectNulls={true}
               />
-              <Brush dataKey="date" height={30} stroke="#8884d8" />
             </LineChart>
           </ResponsiveContainer>
         </div>
