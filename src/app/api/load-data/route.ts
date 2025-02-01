@@ -1,4 +1,4 @@
-import { loadDayData } from '../lib/spreadsheet';
+import { ensureAndLoadDay } from '../lib/spreadsheet';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const date = searchParams.get('date');
 
     if (!date) {
-      return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Date is required' }, { status: 400 });
     }
 
     // Verificar que las variables de entorno estén definidas
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       SPREADSHEET_ID: process.env.GOOGLE_SHEETS_SPREADSHEET_ID?.slice(0, 10) + '...'
     });
 
-    const data = await loadDayData(date);
+    const data = await ensureAndLoadDay(date);
     
     if (!data) {
       return NextResponse.json({ 
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Load data error:', error);
+    console.error('Error loading data:', error);
     
     // Mejorar el mensaje de error
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
