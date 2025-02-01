@@ -12,6 +12,15 @@ const initialSections: Section[] = [
     name: 'Workout',
     fields: [
       {
+        id: 'running',
+        name: 'Running',
+        type: 'minutes',
+        required: true,
+        defaultValue: 0,
+        value: 0,
+        step: 1
+      },
+      {
         id: 'abs',
         name: 'Abs',
         type: 'boolean',
@@ -147,7 +156,8 @@ const initialSections: Section[] = [
         type: 'minutes',
         required: true,
         defaultValue: 0,
-        value: 0
+        value: 0,
+        step: 10
       }
     ]
   },
@@ -386,14 +396,17 @@ export default function Home() {
   const renderSection = (section: Section, isYesterday: boolean = false) => {
     if (section.id === 'workout') {
       const fields = section.fields;
-      const midPoint = Math.ceil(fields.length / 2);
-      const leftColumn = fields.slice(0, midPoint);
-      const rightColumn = fields.slice(midPoint);
+      // Exclude running field from columns
+      const columnsFields = fields.filter(field => field.id !== 'running');
+      const runningField = fields.find(field => field.id === 'running');
+      const midPoint = Math.ceil(columnsFields.length / 2);
+      const leftColumn = columnsFields.slice(0, midPoint);
+      const rightColumn = columnsFields.slice(midPoint);
 
       return (
         <div key={section.id} className="mb-8">
           <h2 className="text-xl font-bold mb-4">{section.name}</h2>
-          <div className="grid grid-cols-2 gap-x-8">
+          <div className="grid grid-cols-2 gap-x-8 mb-4">
             <div className="space-y-4">
               {leftColumn.map(field => (
                 <FieldComponent
@@ -423,6 +436,20 @@ export default function Home() {
               ))}
             </div>
           </div>
+          {runningField && (
+            <div className="mt-4">
+              <FieldComponent
+                key={runningField.id}
+                field={runningField}
+                onChange={(value) => handleFieldChange(section.id, runningField.id, value, isYesterday)}
+                sectionId={section.id}
+                date={isYesterday ? 
+                  getYesterdayLocalDate() : 
+                  getLocalDate()
+                }
+              />
+            </div>
+          )}
         </div>
       );
     }

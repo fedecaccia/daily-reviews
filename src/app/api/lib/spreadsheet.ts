@@ -25,6 +25,48 @@ async function waitForRateLimit() {
   lastRequestTime = Date.now();
 }
 
+async function ensureHeaders(sheet: any) {
+  try {
+    // Primero cargar la hoja
+    await sheet.loadCells('A1:Z1');
+    
+    // Obtener los headers actuales y su posición
+    const existingHeadersMap = new Map<string, number>();
+    let lastUsedColumn = -1;
+    
+    for (let i = 0; i < 26; i++) {
+      const cell = sheet.getCell(0, i);
+      if (cell.value) {
+        existingHeadersMap.set(cell.value.toString(), i);
+        lastUsedColumn = i;
+      } else if (lastUsedColumn === -1) {
+        continue;
+      } else {
+        break;
+      }
+    }
+    
+    // Verificar qué headers faltan
+    const missingHeaders = HEADERS.filter(header => !existingHeadersMap.has(header));
+    
+    if (missingHeaders.length > 0) {
+      console.log('Adding new headers at the end:', missingHeaders);
+      
+      // Agregar los headers faltantes al final
+      for (const header of missingHeaders) {
+        lastUsedColumn++;
+        const cell = sheet.getCell(0, lastUsedColumn);
+        cell.value = header;
+      }
+      
+      await sheet.saveUpdatedCells();
+    }
+  } catch (error) {
+    console.error('Error ensuring headers:', error);
+    throw error;
+  }
+}
+
 async function getSpreadsheetConnection() {
   try {
     if (!cachedDoc) {
@@ -40,6 +82,10 @@ async function getSpreadsheetConnection() {
 
       cachedDoc = new GoogleSpreadsheet(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!, jwt);
       await cachedDoc.loadInfo();
+      
+      // Asegurarnos de que existan todas las columnas necesarias
+      const sheet = cachedDoc.sheetsByIndex[0];
+      await ensureHeaders(sheet);
     }
     return cachedDoc;
   } catch (error) {
@@ -98,6 +144,7 @@ async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
 
 const HEADERS = [
   'date',
+  'workout_running',
   'workout_abs',
   'workout_chest',
   'workout_back',
@@ -112,7 +159,7 @@ const HEADERS = [
   'health_sleep_seven',
   'health_acidity',
   'productivity_level',
-  'productivity_reading',
+  'productivity_reading_time',
   'nutrition_fruits',
   'nutrition_polyphenols',
   'nutrition_heavy_food',
@@ -122,6 +169,34 @@ const HEADERS = [
   'life_gaming',
   'notes'
 ];
+
+// Mapa de tipos de campos
+const FIELD_TYPES: Record<string, 'boolean' | 'minutes' | 'slider' | 'text'> = {
+  'workout_running': 'minutes',
+  'workout_abs': 'boolean',
+  'workout_chest': 'boolean',
+  'workout_back': 'boolean',
+  'workout_shoulders': 'boolean',
+  'workout_biceps': 'boolean',
+  'workout_triceps': 'boolean',
+  'workout_legs': 'boolean',
+  'workout_stretching': 'boolean',
+  'workout_aerobic': 'boolean',
+  'relax_yoga': 'boolean',
+  'relax_meditation': 'boolean',
+  'health_sleep_seven': 'boolean',
+  'health_acidity': 'boolean',
+  'productivity_level': 'slider',
+  'productivity_reading_time': 'minutes',
+  'nutrition_fruits': 'minutes',
+  'nutrition_polyphenols': 'boolean',
+  'nutrition_heavy_food': 'boolean',
+  'nutrition_fast_food': 'boolean',
+  'nutrition_yogurt': 'boolean',
+  'life_couple_discussions': 'slider',
+  'life_gaming': 'boolean',
+  'notes': 'text'
+};
 
 export async function updateField(date: string, sectionId: string, fieldId: string, value: string | number | boolean) {
   return withRetry(async () => {
@@ -135,11 +210,34 @@ export async function updateField(date: string, sectionId: string, fieldId: stri
 
     try {
       if (rowIndex === -1) {
-        // Si no existe la fila, la creamos con el campo específico
+        // Si no existe la fila, la creamos con TODOS los campos inicializados
         const newRow: Record<string, any> = {
           date,
-          [fieldKey]: typeof value === 'boolean' ? value.toString().toUpperCase() : value.toString()
         };
+        
+        // Inicializar todos los campos con sus valores por defecto según su tipo
+        HEADERS.forEach(header => {
+          if (header === 'date') return; // Skip date as it's already set
+          
+          const fieldType = FIELD_TYPES[header];
+          switch (fieldType) {
+            case 'boolean':
+              newRow[header] = 'FALSE';
+              break;
+            case 'minutes':
+              newRow[header] = '0';
+              break;
+            case 'slider':
+              newRow[header] = '1';
+              break;
+            case 'text':
+              newRow[header] = '';
+              break;
+          }
+        });
+        
+        // Actualizar el campo específico con el valor proporcionado
+        newRow[fieldKey] = typeof value === 'boolean' ? value.toString().toUpperCase() : value.toString();
         
         // Solo una escritura para crear la fila
         await sheet.addRow(newRow);
@@ -174,10 +272,33 @@ export async function updateNotes(date: string, notes: string) {
     const rowIndex = rows.findIndex(row => row.get('date') === date);
     
     if (rowIndex === -1) {
-      await sheet.addRow({
+      // Si no existe la fila, la creamos con TODOS los campos inicializados
+      const newRow: Record<string, any> = {
         date,
-        notes
+      };
+      
+      // Inicializar todos los campos con sus valores por defecto según su tipo
+      HEADERS.forEach(header => {
+        if (header === 'date') return; // Skip date as it's already set
+        
+        const fieldType = FIELD_TYPES[header];
+        switch (fieldType) {
+          case 'boolean':
+            newRow[header] = 'FALSE';
+            break;
+          case 'minutes':
+            newRow[header] = '0';
+            break;
+          case 'slider':
+            newRow[header] = '1';
+            break;
+          case 'text':
+            newRow[header] = header === 'notes' ? notes : '';
+            break;
+        }
       });
+      
+      await sheet.addRow(newRow);
     } else {
       rows[rowIndex].set('notes', notes);
       await rows[rowIndex].save();

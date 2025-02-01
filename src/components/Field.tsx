@@ -38,9 +38,10 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
     }
   };
 
-  const handleMinutesChange = (increment: number) => {
+  const handleMinutesChange = (increment: boolean) => {
     const currentValue = Number(field.value);
-    const newValue = currentValue + increment;
+    const step = field.step || 5; // Si no hay step definido, usar 5 como valor por defecto
+    const newValue = currentValue + (increment ? step : -step);
     
     // No permitir valores negativos y máximo 240 minutos (4 horas)
     if (newValue >= 0 && newValue <= 240) {
@@ -89,7 +90,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
         return (
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => handleMinutesChange(-5)}
+              onClick={() => handleMinutesChange(false)}
               className={`px-3 py-1 rounded ${
                 Number(field.value) <= 0 
                   ? 'bg-[var(--color-disabled)] cursor-not-allowed' 
@@ -101,7 +102,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
             </button>
             <span className="w-16 text-center text-base">{field.value} min</span>
             <button
-              onClick={() => handleMinutesChange(5)}
+              onClick={() => handleMinutesChange(true)}
               className={`px-3 py-1 rounded ${
                 Number(field.value) >= 240 
                   ? 'bg-[var(--color-disabled)] cursor-not-allowed' 
