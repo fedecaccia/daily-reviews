@@ -318,77 +318,54 @@ export default function Home() {
   const [todaySections, setTodaySections] = useState<Section[]>(initialSections);
   const [yesterdaySections, setYesterdaySections] = useState<Section[]>(initialSections);
   const [historicalData, setHistoricalData] = useState<Array<any>>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Cargar datos desde Google Sheets
+  // Cargar datos iniciales
   useEffect(() => {
     const loadInitialData = async () => {
+      setIsLoading(true);
       try {
-        // Cargar datos de hoy
-        const todayDate = getLocalDate();
-        const todayResponse = await fetch(`/api/load-data?date=${todayDate}`);
-        let todayData = null;
-        
-        if (todayResponse.status !== 404) {
-          if (!todayResponse.ok) {
-            const errorData = await todayResponse.json();
-            console.error('Error loading today data:', {
-              status: todayResponse.status,
-              statusText: todayResponse.statusText,
-              error: errorData
-            });
-            throw new Error(`Failed to load today's data: ${errorData.details || errorData.error}`);
-          }
-          todayData = await todayResponse.json();
-        }
-        
-        // Cargar datos de ayer
-        const yesterdayDate = getYesterdayLocalDate();
-        const yesterdayResponse = await fetch(`/api/load-data?date=${yesterdayDate}`);
-        let yesterdayData = null;
+        // Cargar datos de hoy y ayer en paralelo
+        const [todayData, yesterdayData] = await Promise.all([
+          fetch(`/api/load-day?date=${getLocalDate()}`).then(r => r.json()),
+          fetch(`/api/load-day?date=${getYesterdayLocalDate()}`).then(r => r.json())
+        ]);
 
-        if (yesterdayResponse.status !== 404) {
-          if (!yesterdayResponse.ok) {
-            const errorData = await yesterdayResponse.json();
-            console.error('Error loading yesterday data:', {
-              status: yesterdayResponse.status,
-              statusText: yesterdayResponse.statusText,
-              error: errorData
-            });
-            throw new Error(`Failed to load yesterday's data: ${errorData.details || errorData.error}`);
-          }
-          yesterdayData = await yesterdayResponse.json();
+        // Actualizar datos de hoy
+        if (todayData) {
+          setTodaySections(prevSections =>
+            prevSections.map(section => ({
+              ...section,
+              fields: section.fields.map(field => {
+                const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                return {
+                  ...field,
+                  value: todayData[fieldKey] ?? field.defaultValue
+                };
+              })
+            }))
+          );
         }
 
-        // Actualizar las secciones con los datos o valores por defecto
-        const updatedTodaySections = initialSections.map(section => ({
-          ...section,
-          fields: section.fields.map(field => {
-            const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
-            const value = todayData ? todayData[fieldKey] : field.defaultValue;
-            return {
-              ...field,
-              value: value === undefined || value === '' ? field.defaultValue : value
-            };
-          })
-        }));
-        setTodaySections(updatedTodaySections);
-
-        const updatedYesterdaySections = initialSections.map(section => ({
-          ...section,
-          fields: section.fields.map(field => {
-            const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
-            const value = yesterdayData ? yesterdayData[fieldKey] : field.defaultValue;
-            return {
-              ...field,
-              value: value === undefined || value === '' ? field.defaultValue : value
-            };
-          })
-        }));
-        setYesterdaySections(updatedYesterdaySections);
-
+        // Actualizar datos de ayer
+        if (yesterdayData) {
+          setYesterdaySections(prevSections =>
+            prevSections.map(section => ({
+              ...section,
+              fields: section.fields.map(field => {
+                const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                return {
+                  ...field,
+                  value: yesterdayData[fieldKey] ?? field.defaultValue
+                };
+              })
+            }))
+          );
+        }
       } catch (error) {
         console.error('Error loading initial data:', error);
-        // Aquí podrías mostrar un mensaje de error al usuario
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -706,18 +683,26 @@ export default function Home() {
       </header>
 
       <main className="main-container py-6">
-        {activeTab === 'today' && (
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="text-lg">Loading...</div>
+          </div>
+        ) : (
           <>
-            {Array.isArray(todaySections) && todaySections.map(section => renderSection(section))}
+            {activeTab === 'today' && (
+              <>
+                {Array.isArray(todaySections) && todaySections.map(section => renderSection(section))}
+              </>
+            )}
+            {activeTab === 'yesterday' && (
+              <>
+                {Array.isArray(yesterdaySections) && yesterdaySections.map(section => renderSection(section, true))}
+              </>
+            )}
+            {activeTab === 'stats' && (
+              <Stats data={historicalData} />
+            )}
           </>
-        )}
-        {activeTab === 'yesterday' && (
-          <>
-            {Array.isArray(yesterdaySections) && yesterdaySections.map(section => renderSection(section, true))}
-          </>
-        )}
-        {activeTab === 'stats' && (
-          <Stats data={historicalData} />
         )}
       </main>
     </div>
