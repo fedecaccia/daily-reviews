@@ -142,7 +142,7 @@ async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
   throw lastError;
 }
 
-const HEADERS = [
+export const HEADERS = [
   'date',
   'workout_running',
   'workout_abs',

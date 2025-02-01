@@ -5,6 +5,7 @@ import { Field as FieldComponent } from '@/components/Field';
 import { Section } from '@/types';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UpdateNotesButton } from '@/components/UpdateNotesButton';
+import { Stats } from '@/components/Stats';
 
 const initialSections: Section[] = [
   {
@@ -260,6 +261,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'today' | 'yesterday' | 'stats'>('today');
   const [todaySections, setTodaySections] = useState<Section[]>(initialSections);
   const [yesterdaySections, setYesterdaySections] = useState<Section[]>(initialSections);
+  const [historicalData, setHistoricalData] = useState<Array<any>>([]);
 
   // Cargar datos desde Google Sheets
   useEffect(() => {
@@ -336,6 +338,26 @@ export default function Home() {
 
     loadInitialData();
   }, []);
+
+  // Cargar datos históricos cuando se selecciona la pestaña stats
+  useEffect(() => {
+    const loadHistoricalData = async () => {
+      if (activeTab === 'stats') {
+        try {
+          const response = await fetch('/api/load-historical-data');
+          if (!response.ok) {
+            throw new Error('Failed to load historical data');
+          }
+          const data = await response.json();
+          setHistoricalData(data);
+        } catch (error) {
+          console.error('Error loading historical data:', error);
+        }
+      }
+    };
+
+    loadHistoricalData();
+  }, [activeTab]);
 
   const handleFieldChange = (sectionId: string, fieldId: string, value: number | boolean | string, isYesterday: boolean = false) => {
     console.log('Field change:', {
@@ -576,9 +598,7 @@ export default function Home() {
           </>
         )}
         {activeTab === 'stats' && (
-          <div className="text-center p-4">
-            Stats coming soon...
-          </div>
+          <Stats data={historicalData} />
         )}
       </main>
     </div>
