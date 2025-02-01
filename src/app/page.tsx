@@ -131,7 +131,7 @@ const initialSections: Section[] = [
     fields: [
       {
         id: 'systolic',
-        name: 'Max Systolic Pressure (mmHg)',
+        name: 'Max Systolic Pressure',
         type: 'minutes',
         required: true,
         defaultValue: 120,
@@ -140,7 +140,7 @@ const initialSections: Section[] = [
       },
       {
         id: 'diastolic',
-        name: 'Max Diastolic Pressure (mmHg)',
+        name: 'Max Diastolic Pressure',
         type: 'minutes',
         required: true,
         defaultValue: 80,

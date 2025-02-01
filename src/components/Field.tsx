@@ -100,7 +100,9 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
             >
               -
             </button>
-            <span className="w-16 text-center text-base">{field.value} min</span>
+            <span className="w-16 text-center text-base">
+              {field.value} {field.id.includes('systolic') || field.id.includes('diastolic') ? 'mmHg' : 'min'}
+            </span>
             <button
               onClick={() => handleMinutesChange(true)}
               className={`px-3 py-1 rounded ${
@@ -116,7 +118,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
         );
       
       case 'boolean':
-        const isDangerousField = field.id.match(/^(acidity|heavy_food|fast_food)$/);
+        const isDangerousField = field.id.match(/^(acidity|heavy_food|fast_food|nail_biting)$/);
         
         return (
           <div className="flex items-center">

@@ -35,9 +35,7 @@ interface StatsProps {
 const METRICS: Metric[] = [
   // Workout
   { key: 'workout_running', name: 'Running (minutes)', type: 'number', aggregation: 'sum' },
-  { key: 'workout_abs', name: 'Abs', type: 'boolean', aggregation: 'average' },
-  { key: 'workout_legs', name: 'Legs', type: 'boolean', aggregation: 'average' },
-  { key: 'workout_aerobic', name: 'Aerobic', type: 'boolean', aggregation: 'average' },
+  { key: 'workout_any', name: 'Workout', type: 'boolean', aggregation: 'average' },
   
   // Health
   { key: 'health_sleep_seven', name: 'Sleep 7+ hours', type: 'boolean', aggregation: 'average' },
@@ -64,15 +62,32 @@ const METRICS: Metric[] = [
   { key: 'relax_tea', name: 'Relaxing Tea', type: 'boolean', aggregation: 'average' }
 ];
 
+interface AccumulatorEntry {
+  date: string;
+  _count: number;
+  workout_any?: boolean;
+  [key: string]: any;
+}
+
 export const Stats: React.FC<StatsProps> = ({ data }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('daily');
+
+  // Filtrar las métricas para excluir systolic y diastolic ya que tienen su propio gráfico
+  const filteredMetrics = METRICS.filter(
+    metric => metric.key !== 'health_systolic' && metric.key !== 'health_diastolic'
+  );
 
   // Función para procesar los datos según el rango de tiempo seleccionado
   const processData = (rawData: StatsProps['data'], range: TimeRange) => {
     if (!rawData?.length) return [];
 
     const processEntry = (entry: any) => {
-      const processed = { ...entry };
+      const processed: { [key: string]: any } = { ...entry };
+      
+      // Procesar workout_any combinando todos los ejercicios
+      const workoutFields = ['workout_abs', 'workout_legs', 'workout_chest', 'workout_biceps', 'workout_triceps', 'workout_back', 'workout_shoulders'];
+      processed['workout_any'] = workoutFields.some(field => entry[field]) ? 1 : 0;
+      
       Object.keys(processed).forEach(key => {
         if (key !== 'date') {
           const metric = METRICS.find(m => m.key === key);
@@ -98,7 +113,7 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
 
     switch (range) {
       case 'weekly': {
-        const weeklyData = rawData.reduce((acc: any[], entry) => {
+        const weeklyData = rawData.reduce((acc: AccumulatorEntry[], entry) => {
           const date = new Date(entry.date);
           const weekStart = new Date(date);
           weekStart.setDate(date.getDate() - date.getDay());
@@ -106,8 +121,13 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
 
           const existingWeek = acc.find(w => w.date === weekKey);
           if (existingWeek) {
+            // Procesar workout_any para la semana
+            const workoutFields = ['workout_abs', 'workout_legs', 'workout_chest', 'workout_biceps', 'workout_triceps', 'workout_back', 'workout_shoulders'];
+            const didWorkout = workoutFields.some(field => entry[field]);
+            existingWeek.workout_any = existingWeek.workout_any || didWorkout;
+
             Object.keys(entry).forEach(key => {
-              if (key !== 'date') {
+              if (key !== 'date' && !workoutFields.includes(key)) {
                 const metric = METRICS.find(m => m.key === key);
                 if (!metric) return;
 
@@ -124,7 +144,11 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
             });
             existingWeek._count++;
           } else {
-            acc.push({ ...entry, date: weekKey, _count: 1 });
+            const newEntry: AccumulatorEntry = { ...entry, date: weekKey, _count: 1 };
+            // Procesar workout_any para la nueva entrada
+            const workoutFields = ['workout_abs', 'workout_legs', 'workout_chest', 'workout_biceps', 'workout_triceps', 'workout_back', 'workout_shoulders'];
+            newEntry.workout_any = workoutFields.some(field => entry[field]);
+            acc.push(newEntry);
           }
           return acc;
         }, []);
@@ -132,13 +156,18 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
         return weeklyData.map(({ _count, ...rest }) => processEntry(rest));
       }
       case 'monthly': {
-        const monthlyData = rawData.reduce((acc: any[], entry) => {
+        const monthlyData = rawData.reduce((acc: AccumulatorEntry[], entry) => {
           const monthKey = entry.date.substring(0, 7);
 
           const existingMonth = acc.find(m => m.date === monthKey);
           if (existingMonth) {
+            // Procesar workout_any para el mes
+            const workoutFields = ['workout_abs', 'workout_legs', 'workout_chest', 'workout_biceps', 'workout_triceps', 'workout_back', 'workout_shoulders'];
+            const didWorkout = workoutFields.some(field => entry[field]);
+            existingMonth.workout_any = existingMonth.workout_any || didWorkout;
+
             Object.keys(entry).forEach(key => {
-              if (key !== 'date') {
+              if (key !== 'date' && !workoutFields.includes(key)) {
                 const metric = METRICS.find(m => m.key === key);
                 if (!metric) return;
 
@@ -155,7 +184,11 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
             });
             existingMonth._count++;
           } else {
-            acc.push({ ...entry, date: monthKey, _count: 1 });
+            const newEntry: AccumulatorEntry = { ...entry, date: monthKey, _count: 1 };
+            // Procesar workout_any para la nueva entrada
+            const workoutFields = ['workout_abs', 'workout_legs', 'workout_chest', 'workout_biceps', 'workout_triceps', 'workout_back', 'workout_shoulders'];
+            newEntry.workout_any = workoutFields.some(field => entry[field]);
+            acc.push(newEntry);
           }
           return acc;
         }, []);
@@ -172,6 +205,7 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
   const renderMetricChart = (metric: Metric) => {
     const isNumber = metric.type === 'number';
     const isPercentage = metric.type === 'boolean' || (metric.type === 'number' && metric.aggregation === 'average');
+    const isNegativeMetric = metric.key === 'habits_nail_biting' || metric.key === 'health_acidity';
 
     return (
       <div className="bg-[var(--background-secondary)] p-6 rounded-lg">
@@ -195,7 +229,7 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
               <Line
                 type="monotone"
                 dataKey={metric.key}
-                stroke="#8884d8"
+                stroke={isNegativeMetric ? "#ff0000" : "#8884d8"}
                 dot={true}
                 strokeWidth={2}
               />
@@ -207,9 +241,125 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
     );
   };
 
+  const renderBloodPressureChart = (data: any[], timeRange: TimeRange) => {
+    // Función para procesar los datos de presión arterial
+    const processBloodPressureData = (rawData: any[]) => {
+      if (!rawData?.length) return [];
+
+      switch (timeRange) {
+        case 'weekly': {
+          const weeklyData = rawData.reduce((acc: any[], entry) => {
+            const date = new Date(entry.date);
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay());
+            const weekKey = weekStart.toISOString().split('T')[0];
+
+            const existingWeek = acc.find(w => w.date === weekKey);
+            if (existingWeek) {
+              // Para weekly, tomamos el máximo valor de la semana
+              if (entry.health_systolic > 0) {
+                existingWeek.health_systolic = Math.max(existingWeek.health_systolic || 0, entry.health_systolic);
+              }
+              if (entry.health_diastolic > 0) {
+                existingWeek.health_diastolic = Math.max(existingWeek.health_diastolic || 0, entry.health_diastolic);
+              }
+            } else {
+              acc.push({
+                date: weekKey,
+                health_systolic: entry.health_systolic > 0 ? entry.health_systolic : null,
+                health_diastolic: entry.health_diastolic > 0 ? entry.health_diastolic : null
+              });
+            }
+            return acc;
+          }, []);
+
+          return weeklyData;
+        }
+        case 'monthly': {
+          const monthlyData = rawData.reduce((acc: any[], entry) => {
+            const monthKey = entry.date.substring(0, 7);
+
+            const existingMonth = acc.find(m => m.date === monthKey);
+            if (existingMonth) {
+              // Para monthly, tomamos el máximo valor del mes
+              if (entry.health_systolic > 0) {
+                existingMonth.health_systolic = Math.max(existingMonth.health_systolic || 0, entry.health_systolic);
+              }
+              if (entry.health_diastolic > 0) {
+                existingMonth.health_diastolic = Math.max(existingMonth.health_diastolic || 0, entry.health_diastolic);
+              }
+            } else {
+              acc.push({
+                date: monthKey,
+                health_systolic: entry.health_systolic > 0 ? entry.health_systolic : null,
+                health_diastolic: entry.health_diastolic > 0 ? entry.health_diastolic : null
+              });
+            }
+            return acc;
+          }, []);
+
+          return monthlyData;
+        }
+        default: {
+          // Para daily, filtramos los valores 0 (default)
+          return rawData.map(entry => ({
+            date: entry.date,
+            health_systolic: entry.health_systolic > 0 ? entry.health_systolic : null,
+            health_diastolic: entry.health_diastolic > 0 ? entry.health_diastolic : null
+          }));
+        }
+      }
+    };
+
+    const processedData = processBloodPressureData(data);
+
+    return (
+      <div className="bg-[var(--background-secondary)] p-6 rounded-lg">
+        <h3 className="text-lg font-semibold mb-4">Blood Pressure (mmHg)</h3>
+        <div className="h-[200px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={processedData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                angle={-45}
+                textAnchor="end"
+                height={60}
+                interval="preserveStartEnd"
+              />
+              <YAxis 
+                domain={[60, 160]}
+                ticks={[60, 80, 100, 120, 140, 160]}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="health_systolic"
+                name="Systolic"
+                stroke="#ff0000"
+                dot={true}
+                strokeWidth={2}
+                connectNulls={true}
+              />
+              <Line
+                type="monotone"
+                dataKey="health_diastolic"
+                name="Diastolic"
+                stroke="#0000ff"
+                dot={true}
+                strokeWidth={2}
+                connectNulls={true}
+              />
+              <Brush dataKey="date" height={30} stroke="#8884d8" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-8 max-w-[800px] mx-auto">
-      {/* Selector de rango de tiempo */}
       <div className="flex justify-center space-x-4 mb-8">
         {(['daily', 'weekly', 'monthly'] as TimeRange[]).map((range) => (
           <button
@@ -226,12 +376,23 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
         ))}
       </div>
 
-      {/* Renderizar las gráficas individuales */}
-      {METRICS.map((metric) => (
-        <div key={metric.key}>
-          {renderMetricChart(metric)}
-        </div>
-      ))}
+      {/* Renderizar las gráficas en orden específico */}
+      {filteredMetrics.map((metric) => {
+        // Renderizar el gráfico de presión arterial después de headache
+        if (metric.key === 'health_headache') {
+          return (
+            <React.Fragment key={metric.key}>
+              {renderMetricChart(metric)}
+              {renderBloodPressureChart(data, timeRange)}
+            </React.Fragment>
+          );
+        }
+        return (
+          <div key={metric.key}>
+            {renderMetricChart(metric)}
+          </div>
+        );
+      })}
     </div>
   );
 }; 
