@@ -38,13 +38,14 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
     }
   };
 
-  const handleMinutesChange = (increment: boolean) => {
+  const handleMinutesChange = (increment: boolean, bigIncrement: boolean = false) => {
     const currentValue = Number(field.value);
     const step = field.step || 5; // Si no hay step definido, usar 5 como valor por defecto
-    const newValue = currentValue + (increment ? step : -step);
+    const newValue = currentValue + (increment ? (bigIncrement ? step * 2 : step) : -step);
     
-    // No permitir valores negativos y máximo 240 minutos (4 horas)
-    if (newValue >= 0 && newValue <= 240) {
+    // No permitir valores negativos y máximo 240 minutos (4 horas) o 300 para presión
+    const maxValue = field.id.includes('systolic') || field.id.includes('diastolic') ? 300 : 240;
+    if (newValue >= 0 && newValue <= maxValue) {
       handleChange(newValue);
     }
   };
@@ -87,6 +88,8 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
             </div>
           );
         }
+        const isPressureField = field.id.includes('systolic') || field.id.includes('diastolic');
+        
         return (
           <div className="flex items-center space-x-2">
             <button
@@ -101,19 +104,32 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
               -
             </button>
             <span className="w-16 text-center text-base">
-              {field.value} {field.id.includes('systolic') || field.id.includes('diastolic') ? 'mmHg' : 'min'}
+              {field.value} {isPressureField ? 'mmHg' : 'min'}
             </span>
             <button
               onClick={() => handleMinutesChange(true)}
               className={`px-3 py-1 rounded ${
-                Number(field.value) >= 240 
+                Number(field.value) >= (isPressureField ? 300 : 240)
                   ? 'bg-[var(--color-disabled)] cursor-not-allowed' 
                   : 'bg-[var(--button-success)] text-white'
               }`}
-              disabled={Number(field.value) >= 240}
+              disabled={Number(field.value) >= (isPressureField ? 300 : 240)}
             >
               +
             </button>
+            {isPressureField && (
+              <button
+                onClick={() => handleMinutesChange(true, true)}
+                className={`px-2 py-1 rounded ${
+                  Number(field.value) >= 300
+                    ? 'bg-[var(--color-disabled)] cursor-not-allowed' 
+                    : 'bg-[var(--button-success)] text-white'
+                }`}
+                disabled={Number(field.value) >= 300}
+              >
+                ++
+              </button>
+            )}
           </div>
         );
       
