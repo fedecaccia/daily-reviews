@@ -104,7 +104,7 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
               -
             </button>
             <span className="w-16 text-center text-base">
-              {field.value} {isPressureField ? 'mmHg' : 'min'}
+              {field.value} {field.unitLabel || (isPressureField ? 'mmHg' : 'min')}
             </span>
             <button
               onClick={() => handleMinutesChange(true)}
@@ -227,7 +227,6 @@ export const Field: React.FC<FieldProps> = ({ field, onChange, sectionId, date }
       {field.name && (
         <label className="font-medium text-[var(--text-primary)]">
           {field.name}
-          {field.required && <span className="text-red-500">*</span>}
         </label>
       )}
       <div className={field.type === 'text' ? 'w-full' : ''}>

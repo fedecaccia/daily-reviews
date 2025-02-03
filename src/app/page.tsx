@@ -16,7 +16,6 @@ const initialSections: Section[] = [
         id: 'running',
         name: 'Running',
         type: 'minutes',
-        required: true,
         defaultValue: 0,
         value: 0,
         step: 1
@@ -24,16 +23,16 @@ const initialSections: Section[] = [
       {
         id: 'swimming',
         name: 'Swimming',
-        type: 'boolean',
-        required: true,
-        defaultValue: false,
-        value: false
+        type: 'minutes',
+        defaultValue: 0,
+        value: 0,
+        step: 25,
+        max: 5000
       },
       {
         id: 'abs',
         name: 'Abs',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -41,7 +40,6 @@ const initialSections: Section[] = [
         id: 'chest',
         name: 'Chest',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -49,7 +47,6 @@ const initialSections: Section[] = [
         id: 'back',
         name: 'Back',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -57,7 +54,6 @@ const initialSections: Section[] = [
         id: 'shoulders',
         name: 'Shoulders',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -65,7 +61,6 @@ const initialSections: Section[] = [
         id: 'biceps',
         name: 'Biceps',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -73,7 +68,6 @@ const initialSections: Section[] = [
         id: 'triceps',
         name: 'Triceps',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -81,7 +75,6 @@ const initialSections: Section[] = [
         id: 'legs',
         name: 'Legs',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -89,7 +82,6 @@ const initialSections: Section[] = [
         id: 'stretching',
         name: 'Stretching',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -97,7 +89,6 @@ const initialSections: Section[] = [
         id: 'aerobic',
         name: 'Aerobic',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       }
@@ -111,7 +102,6 @@ const initialSections: Section[] = [
         id: 'yoga',
         name: 'Yoga',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -119,7 +109,6 @@ const initialSections: Section[] = [
         id: 'meditation',
         name: 'Meditation',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -127,7 +116,6 @@ const initialSections: Section[] = [
         id: 'tea',
         name: 'Relaxing Tea',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       }
@@ -141,7 +129,6 @@ const initialSections: Section[] = [
         id: 'systolic',
         name: 'Max Systolic Pressure',
         type: 'minutes',
-        required: true,
         defaultValue: 120,
         value: 120,
         step: 5
@@ -150,7 +137,6 @@ const initialSections: Section[] = [
         id: 'diastolic',
         name: 'Max Diastolic Pressure',
         type: 'minutes',
-        required: true,
         defaultValue: 80,
         value: 80,
         step: 5
@@ -159,7 +145,6 @@ const initialSections: Section[] = [
         id: 'sleep_seven',
         name: 'Slept 7+ hours',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -167,7 +152,6 @@ const initialSections: Section[] = [
         id: 'acidity',
         name: 'Acidity',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -175,7 +159,6 @@ const initialSections: Section[] = [
         id: 'headache',
         name: 'Headache',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       }
@@ -189,7 +172,6 @@ const initialSections: Section[] = [
         id: 'nail_biting',
         name: 'Nail Biting',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -197,7 +179,6 @@ const initialSections: Section[] = [
         id: 'posture',
         name: 'Good Posture',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       }
@@ -211,7 +192,6 @@ const initialSections: Section[] = [
         id: 'productivity_level',
         name: 'Productivity Level',
         type: 'slider',
-        required: true,
         defaultValue: 1,
         value: 1
       },
@@ -219,7 +199,6 @@ const initialSections: Section[] = [
         id: 'reading_time',
         name: 'Reading Time',
         type: 'minutes',
-        required: true,
         defaultValue: 0,
         value: 0,
         step: 10
@@ -234,7 +213,6 @@ const initialSections: Section[] = [
         id: 'fruits',
         name: 'Fruits',
         type: 'minutes',
-        required: true,
         defaultValue: 0,
         value: 0
       },
@@ -242,7 +220,6 @@ const initialSections: Section[] = [
         id: 'polyphenols',
         name: 'Polyphenols',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -250,7 +227,6 @@ const initialSections: Section[] = [
         id: 'heavy_food',
         name: 'Heavy Food',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -258,7 +234,6 @@ const initialSections: Section[] = [
         id: 'fast_food',
         name: 'Fast Food',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       },
@@ -266,7 +241,6 @@ const initialSections: Section[] = [
         id: 'yogurt',
         name: 'Yogurt',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       }
@@ -280,7 +254,6 @@ const initialSections: Section[] = [
         id: 'couple_discussions',
         name: 'Couple Discussions',
         type: 'slider',
-        required: true,
         defaultValue: 1,
         value: 1
       },
@@ -288,7 +261,6 @@ const initialSections: Section[] = [
         id: 'gaming',
         name: 'Gaming',
         type: 'boolean',
-        required: true,
         defaultValue: false,
         value: false
       }
@@ -302,7 +274,6 @@ const initialSections: Section[] = [
         id: 'notes',
         name: '',
         type: 'text',
-        required: false,
         defaultValue: '',
         value: ''
       }
@@ -460,9 +431,10 @@ export default function Home() {
   const renderSection = (section: Section, isYesterday: boolean = false) => {
     if (section.id === 'workout') {
       const fields = section.fields;
-      // Exclude running field from columns
-      const columnsFields = fields.filter(field => field.id !== 'running');
+      // Exclude running and swimming fields from columns
+      const columnsFields = fields.filter(field => field.id !== 'running' && field.id !== 'swimming');
       const runningField = fields.find(field => field.id === 'running');
+      const swimmingField = fields.find(field => field.id === 'swimming');
       const midPoint = Math.ceil(columnsFields.length / 2);
       const leftColumn = columnsFields.slice(0, midPoint);
       const rightColumn = columnsFields.slice(midPoint);
@@ -477,10 +449,22 @@ export default function Home() {
                 field={runningField}
                 onChange={(value) => handleFieldChange(section.id, runningField.id, value, isYesterday)}
                 sectionId={section.id}
-                date={isYesterday ? 
-                  getYesterdayLocalDate() : 
-                  getLocalDate()
-                }
+                date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
+              />
+            </div>
+          )}
+          {swimmingField && (
+            <div className="mb-6">
+              <FieldComponent
+                key={swimmingField.id}
+                field={{
+                  ...swimmingField,
+                  type: 'minutes',
+                  unitLabel: 'm'
+                }}
+                onChange={(value) => handleFieldChange(section.id, swimmingField.id, value, isYesterday)}
+                sectionId={section.id}
+                date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
               />
             </div>
           )}
@@ -492,10 +476,7 @@ export default function Home() {
                   field={field}
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                   sectionId={section.id}
-                  date={isYesterday ? 
-                    getYesterdayLocalDate() : 
-                    getLocalDate()
-                  }
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
                 />
               ))}
             </div>
@@ -506,10 +487,58 @@ export default function Home() {
                   field={field}
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                   sectionId={section.id}
-                  date={isYesterday ? 
-                    getYesterdayLocalDate() : 
-                    getLocalDate()
-                  }
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (section.id === 'nutrition') {
+      const fields = section.fields;
+      // Exclude fruits from columns
+      const columnsFields = fields.filter(field => field.id !== 'fruits');
+      const fruitsField = fields.find(field => field.id === 'fruits');
+      const midPoint = Math.ceil(columnsFields.length / 2);
+      const leftColumn = columnsFields.slice(0, midPoint);
+      const rightColumn = columnsFields.slice(midPoint);
+
+      return (
+        <div key={section.id} className="mb-8">
+          <h2 className="text-xl font-bold mb-4">{section.name}</h2>
+          {fruitsField && (
+            <div className="mb-6">
+              <FieldComponent
+                key={fruitsField.id}
+                field={fruitsField}
+                onChange={(value) => handleFieldChange(section.id, fruitsField.id, value, isYesterday)}
+                sectionId={section.id}
+                date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
+              />
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-x-8">
+            <div className="space-y-4">
+              {leftColumn.map(field => (
+                <FieldComponent
+                  key={field.id}
+                  field={field}
+                  onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
+                />
+              ))}
+            </div>
+            <div className="space-y-4">
+              {rightColumn.map(field => (
+                <FieldComponent
+                  key={field.id}
+                  field={field}
+                  onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
                 />
               ))}
             </div>
@@ -520,33 +549,27 @@ export default function Home() {
 
     if (section.id === 'health') {
       const fields = section.fields;
-      // Primero los campos numéricos
-      const numericFields = fields.filter(field => field.type === 'minutes');
-      // Luego los campos booleanos en columnas
-      const booleanFields = fields.filter(field => field.type === 'boolean');
-      const midPoint = Math.ceil(booleanFields.length / 2);
-      const leftColumn = booleanFields.slice(0, midPoint);
-      const rightColumn = booleanFields.slice(midPoint);
+      // Exclude pressure fields from columns
+      const columnsFields = fields.filter(field => !['systolic', 'diastolic'].includes(field.id));
+      const pressureFields = fields.filter(field => ['systolic', 'diastolic'].includes(field.id));
+      const midPoint = Math.ceil(columnsFields.length / 2);
+      const leftColumn = columnsFields.slice(0, midPoint);
+      const rightColumn = columnsFields.slice(midPoint);
 
       return (
         <div key={section.id} className="mb-8">
           <h2 className="text-xl font-bold mb-4">{section.name}</h2>
-          {/* Campos numéricos primero */}
-          <div className="space-y-4 mb-4">
-            {numericFields.map(field => (
+          {pressureFields.map(field => (
+            <div key={field.id} className="mb-6">
               <FieldComponent
                 key={field.id}
                 field={field}
                 onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                 sectionId={section.id}
-                date={isYesterday ? 
-                  getYesterdayLocalDate() : 
-                  getLocalDate()
-                }
+                date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
               />
-            ))}
-          </div>
-          {/* Campos booleanos en columnas */}
+            </div>
+          ))}
           <div className="grid grid-cols-2 gap-x-8">
             <div className="space-y-4">
               {leftColumn.map(field => (
@@ -555,10 +578,7 @@ export default function Home() {
                   field={field}
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                   sectionId={section.id}
-                  date={isYesterday ? 
-                    getYesterdayLocalDate() : 
-                    getLocalDate()
-                  }
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
                 />
               ))}
             </div>
@@ -569,10 +589,7 @@ export default function Home() {
                   field={field}
                   onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
                   sectionId={section.id}
-                  date={isYesterday ? 
-                    getYesterdayLocalDate() : 
-                    getLocalDate()
-                  }
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
                 />
               ))}
             </div>
@@ -591,29 +608,20 @@ export default function Home() {
                 key={section.fields[0].id}
                 field={{
                   ...section.fields[0],
-                  name: ''  // Quitamos el nombre ya que está en el título
+                  name: ''
                 }}
                 onChange={(value) => handleFieldChange(section.id, section.fields[0].id, value, isYesterday)}
                 sectionId={section.id}
-                date={isYesterday ? 
-                  getYesterdayLocalDate() : 
-                  getLocalDate()
-                }
+                date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
               />
             </div>
             <div className="flex justify-center">
               <UpdateNotesButton 
                 notes={section.fields[0].value as string}
                 initialNotes={isYesterday ? yesterdaySections.find(s => s.id === 'notes')?.fields[0].value as string : todaySections.find(s => s.id === 'notes')?.fields[0].value as string}
-                date={isYesterday ? 
-                  getYesterdayLocalDate() : 
-                  getLocalDate()
-                }
+                date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
                 onUpdate={async () => {
-                  const currentDate = isYesterday ? 
-                    getYesterdayLocalDate() : 
-                    getLocalDate();
-
+                  const currentDate = isYesterday ? getYesterdayLocalDate() : getLocalDate();
                   const response = await fetch(`/api/load-data?date=${currentDate}`);
                   const data = await response.json();
                   if (data) {
@@ -641,20 +649,61 @@ export default function Home() {
       );
     }
 
+    // Sections that should be rendered in two columns
+    const twoColumnsLayouts = ['habits', 'relax'];
+
+    if (twoColumnsLayouts.includes(section.id)) {
+      const midPoint = Math.ceil(section.fields.length / 2);
+      const leftColumn = section.fields.slice(0, midPoint);
+      const rightColumn = section.fields.slice(midPoint);
+
+      return (
+        <div key={section.id} className="mb-8">
+          <h2 className="text-xl font-bold mb-4">{section.name}</h2>
+          <div className="grid grid-cols-2 gap-x-8">
+            <div className="space-y-4">
+              {leftColumn.map(field => (
+                <FieldComponent
+                  key={field.id}
+                  field={field}
+                  onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
+                />
+              ))}
+            </div>
+            <div className="space-y-4">
+              {rightColumn.map(field => (
+                <FieldComponent
+                  key={field.id}
+                  field={field}
+                  onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
+                  sectionId={section.id}
+                  date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Default render for other sections (Relax, Productivity, Life)
+    const midPoint = Math.ceil(section.fields.length / 2);
+    const leftColumn = section.fields.slice(0, midPoint);
+    const rightColumn = section.fields.slice(midPoint);
+
     return (
       <div key={section.id} className="mb-8">
         <h2 className="text-xl font-bold mb-4">{section.name}</h2>
         <div className="space-y-4">
-          {Array.isArray(section.fields) && section.fields.map(field => (
+          {section.fields.map(field => (
             <FieldComponent
               key={field.id}
               field={field}
               onChange={(value) => handleFieldChange(section.id, field.id, value, isYesterday)}
               sectionId={section.id}
-              date={isYesterday ? 
-                getYesterdayLocalDate() : 
-                getLocalDate()
-              }
+              date={isYesterday ? getYesterdayLocalDate() : getLocalDate()}
             />
           ))}
         </div>
@@ -733,4 +782,4 @@ export default function Home() {
       </main>
     </div>
   );
-} 
+}

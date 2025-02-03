@@ -34,7 +34,7 @@ interface StatsProps {
 const METRICS: Metric[] = [
   // Workout
   { key: 'workout_running', name: 'Running (minutes)', type: 'number', aggregation: 'sum' },
-  { key: 'workout_swimming', name: 'Swimming', type: 'boolean', aggregation: 'average' },
+  { key: 'workout_swimming', name: 'Swimming (meters)', type: 'number', aggregation: 'sum', min_value: 0, max_value: 2000 },
   { key: 'workout_any', name: 'Workout', type: 'boolean', aggregation: 'average' },
   
   // Health
@@ -222,9 +222,21 @@ export const Stats: React.FC<StatsProps> = ({ data }) => {
                 interval="preserveStartEnd"
               />
               <YAxis 
-                domain={isPercentage ? [0, 100] : ['auto', 'auto']}
-                tickFormatter={isPercentage ? (value) => `${value}%` : undefined}
-                ticks={isPercentage ? [0, 25, 50, 75, 100] : undefined}
+                domain={
+                  metric.key === 'workout_swimming' 
+                    ? [0, 2000]
+                    : isPercentage ? [0, 100] : ['auto', 'auto']
+                }
+                tickFormatter={
+                  metric.key === 'workout_swimming'
+                    ? undefined
+                    : isPercentage ? (value) => `${value}%` : undefined
+                }
+                ticks={
+                  metric.key === 'workout_swimming'
+                    ? [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
+                    : isPercentage ? [0, 25, 50, 75, 100] : undefined
+                }
               />
               <Line
                 type="monotone"

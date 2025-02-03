@@ -182,7 +182,7 @@ export const HEADERS = [
 // Mapa de tipos de campos
 const FIELD_TYPES: Record<string, 'boolean' | 'minutes' | 'slider' | 'text'> = {
   'workout_running': 'minutes',
-  'workout_swimming': 'boolean',
+  'workout_swimming': 'minutes',
   'workout_abs': 'boolean',
   'workout_chest': 'boolean',
   'workout_back': 'boolean',
