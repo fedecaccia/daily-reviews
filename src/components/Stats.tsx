@@ -34,6 +34,7 @@ interface StatsProps {
 const METRICS: Metric[] = [
   // Workout
   { key: 'workout_running', name: 'Running (minutes)', type: 'number', aggregation: 'sum' },
+  { key: 'workout_swimming', name: 'Swimming', type: 'boolean', aggregation: 'average' },
   { key: 'workout_any', name: 'Workout', type: 'boolean', aggregation: 'average' },
   
   // Health

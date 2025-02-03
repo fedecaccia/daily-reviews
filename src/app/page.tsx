@@ -22,6 +22,14 @@ const initialSections: Section[] = [
         step: 1
       },
       {
+        id: 'swimming',
+        name: 'Swimming',
+        type: 'boolean',
+        required: true,
+        defaultValue: false,
+        value: false
+      },
+      {
         id: 'abs',
         name: 'Abs',
         type: 'boolean',

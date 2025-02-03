@@ -147,6 +147,7 @@ async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
 export const HEADERS = [
   'date',
   'workout_running',
+  'workout_swimming',
   'workout_abs',
   'workout_chest',
   'workout_back',
@@ -181,6 +182,7 @@ export const HEADERS = [
 // Mapa de tipos de campos
 const FIELD_TYPES: Record<string, 'boolean' | 'minutes' | 'slider' | 'text'> = {
   'workout_running': 'minutes',
+  'workout_swimming': 'boolean',
   'workout_abs': 'boolean',
   'workout_chest': 'boolean',
   'workout_back': 'boolean',
