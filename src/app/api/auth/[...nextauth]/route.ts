@@ -17,7 +17,7 @@ const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user }) {
-      const allowedEmails = ['fede@ratherlabs.com', 'federicoagustincaccia@gmail.com'];
+      const allowedEmails = process.env.ALLOWED_EMAILS?.split(',').map(email => email.trim().toLowerCase()) || [];
       return allowedEmails.includes(user.email?.toLowerCase() || '');
     },
     async redirect({ url, baseUrl }) {
