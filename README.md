@@ -1,6 +1,6 @@
 # Daily Review
 
-Personal goal tracker. Edit fields and add new ones!
+Track your daily habits and goals to gain insights, achieve objectives, and build lasting positive changes. Simple yet powerful habit formation tool.
 
 Remember to update your env variables to sync with your Google Sheet.
 
