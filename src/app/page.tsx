@@ -705,10 +705,15 @@ export default function Home() {
                 <Stats data={historicalData} />
                 <div className="flex justify-center mt-8 mb-8">
                   <a
-                    href={process.env.NEXT_PUBLIC_SHEET_LINK}
+                    href={process.env.NEXT_PUBLIC_SHEET_LINK || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-6 py-3 bg-[var(--color-blue)] text-[var(--text-primary)] rounded-lg hover:bg-opacity-80 transition-opacity"
+                    onClick={() => {
+                      if (!process.env.NEXT_PUBLIC_SHEET_LINK) {
+                        console.error('Sheet link not configured');
+                      }
+                    }}
                   >
                     Raw Data
                   </a>
