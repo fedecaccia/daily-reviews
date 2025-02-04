@@ -219,14 +219,14 @@ export async function updateField(date: string, sectionId: string, fieldId: stri
     const doc = await getSpreadsheetConnection();
     const sheet = doc.sheetsByIndex[0];
     
-    // Una sola lectura para encontrar o crear la fila
     const rows = await sheet.getRows();
     if (!rows) {
       throw new Error('Failed to get sheet rows');
     }
     
     const rowIndex = rows.findIndex(row => row.get('date') === date);
-    const fieldKey = `${sectionId}_${fieldId}`;
+    // Verificar si fieldId ya incluye el prefijo de la sección
+    const fieldKey = fieldId.startsWith(`${sectionId}_`) ? fieldId : `${sectionId}_${fieldId}`;
 
     try {
       if (rowIndex === -1) {
@@ -237,7 +237,7 @@ export async function updateField(date: string, sectionId: string, fieldId: stri
         
         // Inicializar todos los campos con sus valores por defecto según su tipo
         HEADERS.forEach(header => {
-          if (header === 'date') return; // Skip date as it's already set
+          if (header === 'date') return;
           
           const fieldType = FIELD_TYPES[header];
           switch (fieldType) {
@@ -257,16 +257,36 @@ export async function updateField(date: string, sectionId: string, fieldId: stri
         });
         
         // Actualizar el campo específico con el valor proporcionado
-        newRow[fieldKey] = typeof value === 'boolean' ? value.toString().toUpperCase() : value.toString();
+        const fieldType = FIELD_TYPES[fieldKey];
+        if (fieldType === 'boolean') {
+          newRow[fieldKey] = value.toString().toUpperCase();
+        } else if (fieldType === 'slider') {
+          const sliderValue = Math.max(1, Math.min(5, Number(value)));
+          newRow[fieldKey] = sliderValue.toString();
+        } else if (fieldType === 'minutes') {
+          newRow[fieldKey] = value.toString();
+        } else {
+          newRow[fieldKey] = value.toString();
+        }
         
-        // Solo una escritura para crear la fila
         await sheet.addRow(newRow);
       } else {
         // Si existe, actualizamos solo el campo específico
-        const formattedValue = typeof value === 'boolean' ? value.toString().toUpperCase() : value.toString();
-        rows[rowIndex].set(fieldKey, formattedValue);
+        const fieldType = FIELD_TYPES[fieldKey];
+        let formattedValue;
         
-        // Solo una escritura para actualizar el campo
+        if (fieldType === 'boolean') {
+          formattedValue = value.toString().toUpperCase();
+        } else if (fieldType === 'slider') {
+          const sliderValue = Math.max(1, Math.min(5, Number(value)));
+          formattedValue = sliderValue.toString();
+        } else if (fieldType === 'minutes') {
+          formattedValue = value.toString();
+        } else {
+          formattedValue = value.toString();
+        }
+        
+        rows[rowIndex].set(fieldKey, formattedValue);
         await rows[rowIndex].save();
       }
     } catch (error) {
@@ -372,8 +392,10 @@ export async function ensureAndLoadDay(date: string): Promise<DayData | null> {
           newRow[header] = false;
           break;
         case 'minutes':
-        case 'slider':
           newRow[header] = 0;
+          break;
+        case 'slider':
+          newRow[header] = 1; // Los sliders empiezan en 1
           break;
         default:
           newRow[header] = '';
