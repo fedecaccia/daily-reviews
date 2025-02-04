@@ -189,7 +189,7 @@ const initialSections: Section[] = [
     name: 'Productivity',
     fields: [
       {
-        id: 'productivity_level',
+        id: 'level',
         name: 'Productivity Level',
         type: 'slider',
         defaultValue: 1,
@@ -318,9 +318,10 @@ export default function Home() {
               ...section,
               fields: section.fields.map(field => {
                 const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                const loadedValue = todayData[fieldKey] ?? field.defaultValue;
                 return {
                   ...field,
-                  value: todayData[fieldKey] ?? field.defaultValue
+                  value: loadedValue
                 };
               })
             }))
@@ -334,9 +335,10 @@ export default function Home() {
               ...section,
               fields: section.fields.map(field => {
                 const fieldKey = section.id === 'notes' ? 'notes' : `${section.id}_${field.id}`;
+                const loadedValue = yesterdayData[fieldKey] ?? field.defaultValue;
                 return {
                   ...field,
-                  value: yesterdayData[fieldKey] ?? field.defaultValue
+                  value: loadedValue
                 };
               })
             }))

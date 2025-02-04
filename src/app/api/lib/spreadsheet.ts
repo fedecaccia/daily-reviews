@@ -371,8 +371,12 @@ export async function ensureAndLoadDay(date: string): Promise<DayData | null> {
             data[header] = value?.toLowerCase() === 'true';
             break;
           case 'minutes':
-          case 'slider':
             data[header] = parseInt(value || '0', 10);
+            break;
+          case 'slider':
+            // Los sliders deben estar entre 1 y 5
+            const sliderValue = parseInt(value || '1', 10);
+            data[header] = Math.max(1, Math.min(5, sliderValue));
             break;
           default:
             data[header] = value || '';
