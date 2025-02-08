@@ -27,7 +27,7 @@ const initialSections: Section[] = [
         defaultValue: 0,
         value: 0,
         step: 25,
-        max: 5000
+        max: 100000
       },
       {
         id: 'abs',
